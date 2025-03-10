@@ -1,7 +1,10 @@
 from datetime import datetime
 
+class AccountType:
+    CUSTOMER = "STAFF"
+    ADMIN = "MANAGER"
 
-class StaffEntity:
+class UserEntity:
     id: int
     full_name: str
     phone_number: str
@@ -12,8 +15,9 @@ class StaffEntity:
     is_active: bool
     hashed_password: str
     refresh_token: str | None
+    role: str
 
-    def __init__(self, id: int, full_name: str, phone_number: str, email: str, address: str, updated_at: datetime, joined_at: datetime, is_active: bool, hashed_password: str, refresh_token: str | None):
+    def __init__(self, id: int, full_name: str, phone_number: str, email: str, address: str, updated_at: datetime, joined_at: datetime, is_active: bool, hashed_password: str, refresh_token: str | None, role: str):
         self.id = id
         self.full_name = full_name
         self.phone_number = phone_number
@@ -24,3 +28,4 @@ class StaffEntity:
         self.is_active = is_active
         self.hashed_password = hashed_password
         self.refresh_token = refresh_token
+        self.role = role

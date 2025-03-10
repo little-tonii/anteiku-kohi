@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import Optional
-from domain.entity.staff_entity import StaffEntity
+from domain.entity.user_entity import UserEntity
 
 
-class StaffRepository(ABC):
+class UserRepository(ABC):
     @abstractmethod
-    async def get_by_id(self, id: int) -> Optional[StaffEntity]:
+    async def get_by_id(self, id: int) -> Optional[UserEntity]:
         pass
     
     @abstractmethod
-    async def get_by_email(self, email: str) -> Optional[StaffEntity]:
+    async def get_by_email(self, email: str) -> Optional[UserEntity]:
         pass
     
     @abstractmethod
@@ -21,9 +21,9 @@ class StaffRepository(ABC):
         pass
 
     @abstractmethod
-    async def create(self, staff_entity: StaffEntity) -> StaffEntity:
+    async def create(self, user_entity: UserEntity) -> UserEntity:
         pass
     
     @abstractmethod
-    async def update_by_id(self, staff_entity: StaffEntity) -> StaffEntity:
+    async def update(self, user_entity: UserEntity) -> UserEntity:
         pass
