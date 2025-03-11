@@ -1,7 +1,7 @@
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 
-from infrastructure.config.variables import DATABASE_URL
+from ...infrastructure.config.variables import DATABASE_URL
 
 async_engine = create_async_engine(DATABASE_URL)
 

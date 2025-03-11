@@ -1,8 +1,8 @@
 from datetime import datetime
 from pydantic import BaseModel
 
-class UpdateUserResponse(BaseModel):
-    id: str
+class RegisterUserResponse(BaseModel):
+    id: int
     full_name: str
     phone_number: str
     email: str
@@ -10,19 +10,10 @@ class UpdateUserResponse(BaseModel):
     updated_at: datetime
     joined_at: datetime
     is_active: bool
-
-class CreateUserResponse(BaseModel):
-    id: str
-    full_name: str
-    phone_number: str
-    email: str
-    address: str
-    updated_at: datetime
-    joined_at: datetime
-    is_active: bool
+    role: str
 
 class GetUserByIdResponse(BaseModel):
-    id: str
+    id: int
     full_name: str
     phone_number: str
     email: str
@@ -30,9 +21,10 @@ class GetUserByIdResponse(BaseModel):
     updated_at: datetime
     joined_at: datetime
     is_active: bool
+    role: str
     
 class GetUserByEmailResponse(BaseModel):
-    id: str
+    id: int
     full_name: str
     phone_number: str
     email: str
@@ -40,3 +32,9 @@ class GetUserByEmailResponse(BaseModel):
     updated_at: datetime
     joined_at: datetime
     is_active: bool
+    role: str
+    
+class LoginUserResponse(BaseModel):
+    refresh_token: str
+    access_token: str
+    token_type: str

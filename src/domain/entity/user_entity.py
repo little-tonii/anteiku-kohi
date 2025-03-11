@@ -1,8 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 class AccountType:
-    CUSTOMER = "STAFF"
-    ADMIN = "MANAGER"
+    STAFF = "STAFF"
+    MANAGER = "MANAGER"
 
 class UserEntity:
     id: int
@@ -17,7 +17,20 @@ class UserEntity:
     refresh_token: str | None
     role: str
 
-    def __init__(self, id: int, full_name: str, phone_number: str, email: str, address: str, updated_at: datetime, joined_at: datetime, is_active: bool, hashed_password: str, refresh_token: str | None, role: str):
+    def __init__(
+        self, 
+        id: int, 
+        full_name: str, 
+        phone_number: str, 
+        email: str, 
+        address: str, 
+        updated_at: datetime, 
+        joined_at: datetime, 
+        is_active: bool, 
+        hashed_password: str, 
+        refresh_token: str, 
+        role: str
+    ):
         self.id = id
         self.full_name = full_name
         self.phone_number = phone_number

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional
-from domain.entity.user_entity import UserEntity
+from ...domain.entity.user_entity import UserEntity
 
 
 class UserRepository(ABC):
@@ -21,7 +21,7 @@ class UserRepository(ABC):
         pass
 
     @abstractmethod
-    async def create(self, user_entity: UserEntity) -> UserEntity:
+    async def create(self, full_name: str, phone_number: str, email: str, address: str, hashed_password: str) -> UserEntity:
         pass
     
     @abstractmethod

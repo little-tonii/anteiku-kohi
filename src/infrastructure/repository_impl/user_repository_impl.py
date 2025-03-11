@@ -2,12 +2,12 @@ from typing import Optional
 
 from fastapi import Depends
 from sqlalchemy import select, update
-from domain.entity.user_entity import UserEntity
-from domain.repository.user_repository import UserRepository
+from ...domain.entity.user_entity import UserEntity
+from ...domain.repository.user_repository import UserRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from infrastructure.config.database import get_db
-from infrastructure.model.user_model import UserModel
+from ...infrastructure.config.database import get_db
+from ...infrastructure.model.user_model import UserModel
 
 class UserRepositoryImpl(UserRepository):
     async_session: AsyncSession
@@ -79,15 +79,15 @@ class UserRepositoryImpl(UserRepository):
             await session.commit()
             return result.rowcount > 0
 
-    async def create(self, user_entity: UserEntity) -> UserEntity:
+    async def create(self, full_name: str, phone_number: str, email: str, address: str, hashed_password: str) -> UserEntity:
         async with self.async_session as session:
             async with session.begin():
                 user_model = UserModel(
-                    full_name=user_entity.full_name,
-                    phone_number=user_entity.phone_number,
-                    email=user_entity.email,
-                    address=user_entity.address,
-                    hashed_password=user_entity.hashed_password
+                    full_name=full_name,
+                    phone_number=phone_number,
+                    email=email,
+                    address=address,
+                    hashed_password=hashed_password
                 )
                 session.add(user_model)
                 await session.flush()

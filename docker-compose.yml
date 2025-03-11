@@ -25,7 +25,7 @@ services:
       anteiku_kohi_db_service:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://user:123456@anteiku_kohi_db_service:5432/anteiku_kohi_db
+      DATABASE_URL: postgresql+asyncpg://user:123456@anteiku_kohi_db_service:5432/anteiku_kohi_db
       SECRET_KEY: seret_key
       HASH_ALGORITHM: HS256
       ACCESS_TOKEN_EXPIRES: 1440

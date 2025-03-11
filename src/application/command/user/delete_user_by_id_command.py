@@ -1,8 +1,8 @@
 from fastapi import Depends, HTTPException
-from domain.repository.user_repository import UserRepository
+from ....domain.repository.user_repository import UserRepository
 from starlette import status
 
-from infrastructure.repository_impl.user_repository_impl import UserRepositoryImpl
+from ....infrastructure.repository_impl.user_repository_impl import UserRepositoryImpl
 
 class DeleteUserByIdCommand:
     id: int

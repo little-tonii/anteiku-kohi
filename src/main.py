@@ -1,10 +1,18 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from infrastructure.config.exception_handler import global_exception_handler, http_exception_handler
-from presentation.api import staff_api
+from .infrastructure.config.database import init_db
 
-app = FastAPI(title="Anteiku Kohi")
+from .infrastructure.config.exception_handler import global_exception_handler, http_exception_handler
+from .presentation.api import user_api
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+
+app = FastAPI(title="Anteiku Kohi", lifespan=lifespan)
 
 origins = [
     "*"
@@ -18,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(staff_api.router)
+app.include_router(user_api.router)
 
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(Exception, global_exception_handler)

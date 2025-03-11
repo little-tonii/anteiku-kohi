@@ -1,10 +1,10 @@
 from fastapi import Depends, HTTPException
-from application.schema.response.user_response_schema import GetUserByIdResponse
-from domain.entity.user_entity import UserEntity
-from domain.repository.user_repository import UserRepository
+from ....application.schema.response.user_response_schema import GetUserByIdResponse
+from ....domain.entity.user_entity import UserEntity
+from ....domain.repository.user_repository import UserRepository
 from starlette import status
 
-from infrastructure.repository_impl.user_repository_impl import UserRepositoryImpl
+from ....infrastructure.repository_impl.user_repository_impl import UserRepositoryImpl
 
 class GetUserByIdQuery:
     id: int
@@ -30,5 +30,6 @@ class GetUserByIdQueryHandler:
             address=user_entity.address,
             updated_at=user_entity.updated_at,
             joined_at=user_entity.joined_at,
-            is_active=user_entity.is_active
+            is_active=user_entity.is_active,
+            role=user_entity.role
         )

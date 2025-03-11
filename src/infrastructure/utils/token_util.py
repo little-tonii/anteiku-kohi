@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from infrastructure.config.variables import ACCESS_TOKEN_EXPIRES, HASH_ALGORITHM, REFRESH_TOKEN_EXPIRES, SECRET_KEY
+from ...infrastructure.config.variables import ACCESS_TOKEN_EXPIRES, HASH_ALGORITHM, REFRESH_TOKEN_EXPIRES, SECRET_KEY
 from jose import JWTError, jwt
 from starlette import status
 from fastapi import HTTPException
