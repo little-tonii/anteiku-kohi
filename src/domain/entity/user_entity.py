@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-class AccountType:
+class UserRole:
     STAFF = "STAFF"
     MANAGER = "MANAGER"
 
