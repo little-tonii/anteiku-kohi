@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from ....application.schema.response.user_response_schema import GetUserByIdResponse
 from ....domain.entity.user_entity import UserEntity
 from ....domain.repository.user_repository import UserRepository
@@ -15,7 +15,7 @@ class GetUserByIdQuery:
 class GetUserByIdQueryHandler:
     user_repository: UserRepository
     
-    def __init__(self, user_repository: UserRepositoryImpl = Depends()):
+    def __init__(self, user_repository: UserRepositoryImpl):
         self.user_repository = user_repository
         
     async def handle(self, query: GetUserByIdQuery) -> GetUserByIdResponse:

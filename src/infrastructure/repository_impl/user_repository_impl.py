@@ -1,18 +1,15 @@
 from typing import Optional
 
-from fastapi import Depends
 from sqlalchemy import select, update
 from ...domain.entity.user_entity import UserEntity
 from ...domain.repository.user_repository import UserRepository
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from ...infrastructure.config.database import get_db
 from ...infrastructure.model.user_model import UserModel
 
 class UserRepositoryImpl(UserRepository):
     async_session: AsyncSession
     
-    def __init__(self, async_session: AsyncSession = Depends(get_db)):
+    def __init__(self, async_session: AsyncSession):
         self.async_session = async_session
         
     async def get_by_id(self, id: int) -> Optional[UserEntity]:

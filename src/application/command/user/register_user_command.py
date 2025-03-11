@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from ....application.schema.response.user_response_schema import RegisterUserResponse
 from ....domain.entity.user_entity import UserEntity
 from ....domain.repository.user_repository import UserRepository
@@ -24,7 +24,7 @@ class RegisterUserCommand:
 class RegisterUserCommandHandler:
     user_repository: UserRepository
     
-    def __init__(self, user_repository: UserRepositoryImpl = Depends()):
+    def __init__(self, user_repository: UserRepositoryImpl):
         self.user_repository = user_repository
         
     async def handle(self, command: RegisterUserCommand) -> RegisterUserResponse:
@@ -38,7 +38,7 @@ class RegisterUserCommandHandler:
             hashed_password=bcrypt_context.hash(command.password)
         )
         return RegisterUserResponse(
-            id=created_user,
+            id=created_user.id,
             full_name=created_user.full_name,
             phone_number=created_user.phone_number,
             email=created_user.email,

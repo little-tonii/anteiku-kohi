@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from ....application.schema.response.user_response_schema import GetUserByEmailResponse
 from ....domain.repository.user_repository import UserRepository
 from starlette import status
@@ -14,7 +14,7 @@ class GetUserByEmailQuery:
 class GetUserByEmailQueryHandler:
     user_repository: UserRepository
     
-    def __init__(self, user_repository: UserRepositoryImpl = Depends()):
+    def __init__(self, user_repository: UserRepositoryImpl):
         self.user_repository = user_repository
         
     async def handle(self, query: GetUserByEmailQuery) -> GetUserByEmailResponse:

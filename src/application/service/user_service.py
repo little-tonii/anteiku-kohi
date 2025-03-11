@@ -1,7 +1,3 @@
-from typing import Annotated
-
-from fastapi import Depends
-
 from ...application.command.user.register_user_command import RegisterUserCommand, RegisterUserCommandHandler
 
 from ...application.command.user.login_user_command import LoginUserCommand, LoginUserCommandHandler
@@ -14,8 +10,8 @@ class UserService:
     
     def __init__(
         self, 
-        login_user_command_handler: LoginUserCommandHandler = Depends(),
-        register_user_command_handler: RegisterUserCommandHandler = Depends()
+        login_user_command_handler: LoginUserCommandHandler,
+        register_user_command_handler: RegisterUserCommandHandler
     ):
         self.login_user_command_handler = login_user_command_handler
         self.register_user_command_handler = register_user_command_handler

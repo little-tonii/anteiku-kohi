@@ -42,7 +42,7 @@ class RegisterUserRequest(BaseModel):
     def check_phone_number(cls, value: str):
         phone_pattern = re.compile(r"^(0\d{9}|\+84\d{9})$")
         if not phone_pattern.match(value):
-            raise ValueError("Số điện thoại không hợp lệ. Số điện thoại phải có đúng 10 chữ số, bắt đầu bằng 0 hoặc +84.")
+            raise ValueError("Số điện thoại không hợp lệ")
         return value
     
     @field_validator("address")

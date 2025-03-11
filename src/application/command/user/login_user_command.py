@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from starlette import status
 from ....application.schema.response.user_response_schema import LoginUserResponse
 from ....domain.repository.user_repository import UserRepository
@@ -17,7 +17,7 @@ class LoginUserCommand:
 class LoginUserCommandHandler:
     user_repository: UserRepository
     
-    def __init__(self, user_repository: UserRepositoryImpl = Depends()):
+    def __init__(self, user_repository: UserRepositoryImpl):
         self.user_repository = user_repository
     
     async def handle(self, command: LoginUserCommand) -> LoginUserResponse:
