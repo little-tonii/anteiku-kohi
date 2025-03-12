@@ -1,10 +1,9 @@
 from fastapi import HTTPException
 from ....application.schema.response.user_response_schema import RegisterUserResponse
-from ....domain.entity.user_entity import UserEntity
 from ....domain.repository.user_repository import UserRepository
 from ....infrastructure.repository_impl.user_repository_impl import UserRepositoryImpl
-from ....infrastructure.config.security import bcrypt_context
 from starlette import status
+from ....infrastructure.config.cryptography import bcrypt_context
 
 class RegisterUserCommand:
     full_name: str

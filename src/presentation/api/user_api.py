@@ -3,14 +3,22 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 
+from ...infrastructure.config.security import verify_access_token
+
+from ...infrastructure.utils.token_util import TokenClaims
+
 from ...infrastructure.config.dependencies import get_user_service
 
-from ...application.schema.request.user_request_schema import RegisterUserRequest
+from ...application.schema.request.user_request_schema import LogoutUserRequest, RegisterUserRequest
 
-from ...application.schema.response.user_response_schema import LoginUserResponse, RegisterUserResponse
+from ...application.schema.response.user_response_schema import LoginUserResponse, LogoutUserResponse, RegisterUserResponse
 from ...application.service.user_service import UserService
 
 router = APIRouter(prefix="/user", tags=["User"])
+
+@router.post(path="/logout", status_code=status.HTTP_200_OK, response_model=LogoutUserResponse)
+async def logout(claims: Annotated[TokenClaims, Depends(verify_access_token)], user_service: Annotated[UserService, Depends(get_user_service)], request: LogoutUserRequest):
+    return await user_service.logout_user(refresh_token=request.refresh_token)
 
 @router.post(path="/login", status_code=status.HTTP_200_OK, response_model=LoginUserResponse)
 async def login(user_service: Annotated[UserService, Depends(get_user_service)], login_form: Annotated[OAuth2PasswordRequestForm, Depends()]):

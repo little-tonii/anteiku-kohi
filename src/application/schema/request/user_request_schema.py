@@ -2,6 +2,16 @@ import re
 from pydantic import BaseModel, field_validator
 from email_validator import validate_email, EmailNotValidError
 
+class LogoutUserRequest(BaseModel):
+    refresh_token: str
+    
+    @field_validator("refresh_token")
+    @classmethod
+    def validate_refresh_token(cls, value: str):
+        if not value.strip():
+            raise ValueError("Refresh token không được để trống")
+        return value
+
 class RegisterUserRequest(BaseModel):
     email: str
     password: str

@@ -22,19 +22,6 @@ async def get_db():
 def get_user_repository(async_session: AsyncSession = Depends(get_db)) -> UserRepository:
     return UserRepositoryImpl(async_session=async_session)
 
-# cqrs dependencies
-def get_login_user_command_handler(user_repository: UserRepository = Depends(get_user_repository)) -> LoginUserCommandHandler:
-    return LoginUserCommandHandler(user_repository=user_repository)
-
-def get_register_user_command_handler(user_repository: UserRepository = Depends(get_user_repository)) -> RegisterUserCommandHandler:
-    return RegisterUserCommandHandler(user_repository=user_repository)
-
 # service dependencies
-def get_user_service(
-    login_user_command_handler: LoginUserCommandHandler = Depends(get_login_user_command_handler),
-    register_user_command_handler: RegisterUserCommandHandler = Depends(get_register_user_command_handler)
-) -> UserService:
-    return UserService(
-        login_user_command_handler=login_user_command_handler,
-        register_user_command_handler=register_user_command_handler
-    )
+def get_user_service(user_repository: UserRepository = Depends(get_user_repository)) -> UserService:
+    return UserService(user_repository=user_repository)
