@@ -1,7 +1,12 @@
 from datetime import datetime
+import enum
+import sqlalchemy
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, func
 from ...infrastructure.config.database import Base
 
+class UserRole(str, enum.Enum):
+    STAFF = "STAFF"
+    MANAGER = "MANAGER"
 
 class UserModel(Base):
     __tablename__ = "users"
@@ -16,4 +21,4 @@ class UserModel(Base):
     is_active: bool = Column(Boolean, nullable=False, default=True)
     hashed_password: str = Column(String, nullable=False)
     refresh_token: str | None = Column(String, nullable=True)
-    role: str = Column(String, nullable=False, default="STAFF")
+    role: str = Column(sqlalchemy.Enum(UserRole), nullable=False, default=UserRole.STAFF)

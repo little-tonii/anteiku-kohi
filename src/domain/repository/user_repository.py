@@ -18,11 +18,11 @@ class UserRepository(ABC):
         pass
     
     @abstractmethod
-    async def delete_by_id(self, id: int) -> bool:
+    async def deactivate_by_id(self, id: int) -> bool:
         pass
     
     @abstractmethod
-    async def delete_by_email(self, email: str) -> bool:
+    async def deactivate_by_email(self, email: str) -> bool:
         pass
 
     @abstractmethod

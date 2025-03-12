@@ -75,7 +75,7 @@ class UserRepositoryImpl(UserRepository):
                 role=user_model.role
             )
     
-    async def delete_by_id(self, id: int) -> bool:
+    async def deactivate_by_id(self, id: int) -> bool:
         async with self.async_session as session:
             query = (
                 update(UserModel)
@@ -86,7 +86,7 @@ class UserRepositoryImpl(UserRepository):
             await session.commit()
             return result.rowcount > 0
     
-    async def delete_by_email(self, email: str) -> bool:
+    async def deactivate_by_email(self, email: str) -> bool:
         async with self.async_session as session:
             query = (
                 update(UserModel)
