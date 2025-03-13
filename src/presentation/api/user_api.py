@@ -11,14 +11,14 @@ from ...infrastructure.config.dependencies import get_user_service
 
 from ...application.schema.request.user_request_schema import LogoutUserRequest, RegisterUserRequest
 
-from ...application.schema.response.user_response_schema import LoginUserResponse, LogoutUserResponse, RegisterUserResponse
+from ...application.schema.response.user_response_schema import LoginUserResponse, RegisterUserResponse
 from ...application.service.user_service import UserService
 
 router = APIRouter(prefix="/user", tags=["User"])
 
-@router.post(path="/logout", status_code=status.HTTP_200_OK, response_model=LogoutUserResponse)
+@router.delete(path="/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(claims: Annotated[TokenClaims, Depends(verify_access_token)], user_service: Annotated[UserService, Depends(get_user_service)], request: LogoutUserRequest):
-    return await user_service.logout_user(refresh_token=request.refresh_token)
+    await user_service.logout_user(refresh_token=request.refresh_token)
 
 @router.post(path="/login", status_code=status.HTTP_200_OK, response_model=LoginUserResponse)
 async def login(user_service: Annotated[UserService, Depends(get_user_service)], login_form: Annotated[OAuth2PasswordRequestForm, Depends()]):
