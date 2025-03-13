@@ -1,6 +1,8 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ...application.service.manager_service import ManagerService
+
 from ...application.service.meal_service import MealService
 
 from ...domain.repository.meal_repository import MealRepository
@@ -33,6 +35,9 @@ def get_meal_repository(async_session: AsyncSession = Depends(get_db)) -> MealRe
 # service dependencies
 def get_user_service(user_repository: UserRepository = Depends(get_user_repository)) -> UserService:
     return UserService(user_repository=user_repository)
+
+def get_manager_service(user_repository: UserRepository = Depends(get_user_repository)) -> ManagerService:
+    return ManagerService(user_repository=user_repository)
 
 def get_meal_service(meal_repository: MealRepository = Depends(get_meal_repository)) -> MealService:
     return MealService(meal_repository=meal_repository)

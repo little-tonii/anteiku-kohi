@@ -4,7 +4,7 @@ from sqlalchemy import select, update
 from ...domain.entity.user_entity import UserEntity
 from ...domain.repository.user_repository import UserRepository
 from sqlalchemy.ext.asyncio import AsyncSession
-from ...infrastructure.model.user_model import UserModel
+from ...infrastructure.model.user_model import UserModel, UserRole
 
 class UserRepositoryImpl(UserRepository):
     async_session: AsyncSession
@@ -79,7 +79,7 @@ class UserRepositoryImpl(UserRepository):
         async with self.async_session as session:
             query = (
                 update(UserModel)
-                .where(UserModel.id == id)
+                .where(UserModel.id == id, UserModel.role == UserRole.STAFF, UserModel.is_active == True)
                 .values(is_active=False)
             )
             result = await session.execute(query)
@@ -90,7 +90,7 @@ class UserRepositoryImpl(UserRepository):
         async with self.async_session as session:
             query = (
                 update(UserModel)
-                .where(UserModel.email == email)
+                .where(UserModel.email == email, UserModel.role == UserRole.STAFF, UserModel.is_active == True)
                 .values(is_active=False)
             )
             result = await session.execute(query)
