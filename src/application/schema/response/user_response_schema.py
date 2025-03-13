@@ -1,8 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel
 
-class LogoutUserResponse(BaseModel):
-    message: str
 
 class RegisterUserResponse(BaseModel):
     id: int

@@ -15,7 +15,7 @@ from starlette import status
 
 router = APIRouter(prefix="/manager", tags=["Manager"])
 
-@router.post(path="/deactivate-user/id/{id}", status_code=status.HTTP_200_OK, response_model=DeactivateUserResponse)
+@router.patch(path="/deactivate-user/id/{id}", status_code=status.HTTP_200_OK, response_model=DeactivateUserResponse)
 async def deactivate_user_by_id(
     claims: Annotated[TokenClaims, Depends(verify_access_token)], 
     manager_service: Annotated[ManagerService, Depends(get_manager_service)], 
@@ -23,7 +23,7 @@ async def deactivate_user_by_id(
 ):
     return await manager_service.deactivate_user_by_id(role=claims.role, id=id)
 
-@router.post(path="/deactivate-user/email/{email}", status_code=status.HTTP_200_OK, response_model=DeactivateUserResponse)
+@router.patch(path="/deactivate-user/email/{email}", status_code=status.HTTP_200_OK, response_model=DeactivateUserResponse)
 async def deactivate_user_by_email(
     claims: Annotated[TokenClaims, Depends(verify_access_token)], 
     manager_service: Annotated[ManagerService, Depends(get_manager_service)], 
@@ -31,7 +31,7 @@ async def deactivate_user_by_email(
 ):
     return await manager_service.deactivate_user_by_email(role=claims.role, email=email)
 
-@router.post(path="/activate-user/id/{id}", status_code=status.HTTP_200_OK, response_model=ActivateUserResponse)
+@router.patch(path="/activate-user/id/{id}", status_code=status.HTTP_200_OK, response_model=ActivateUserResponse)
 async def activate_user_by_id(
     claims: Annotated[TokenClaims, Depends(verify_access_token)], 
     manager_service: Annotated[ManagerService, Depends(get_manager_service)], 
@@ -39,7 +39,7 @@ async def activate_user_by_id(
 ):
     return await manager_service.activate_user_by_id(role=claims.role, id=id)
 
-@router.post(path="/activate-user/email/{email}", status_code=status.HTTP_200_OK, response_model=ActivateUserResponse)
+@router.patch(path="/activate-user/email/{email}", status_code=status.HTTP_200_OK, response_model=ActivateUserResponse)
 async def activate_user_by_email(
     claims: Annotated[TokenClaims, Depends(verify_access_token)], 
     manager_service: Annotated[ManagerService, Depends(get_manager_service)], 

@@ -3,7 +3,7 @@ from ...domain.repository.user_repository import UserRepository
 from ...application.command.user.register_user_command import RegisterUserCommand, RegisterUserCommandHandler
 
 from ...application.command.user.login_user_command import LoginUserCommand, LoginUserCommandHandler
-from ...application.schema.response.user_response_schema import LoginUserResponse, LogoutUserResponse, RegisterUserResponse
+from ...application.schema.response.user_response_schema import LoginUserResponse, RegisterUserResponse
 
 class UserService:
     
@@ -12,10 +12,10 @@ class UserService:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
         
-    async def logout_user(self, refresh_token: str) -> LogoutUserResponse:
+    async def logout_user(self, refresh_token: str) -> None:
         command = LogoutUserCommand(refresh_token=refresh_token)
         command_handler = LogoutUserCommandHandler(user_repository=self.user_repository)
-        return await command_handler.handle(command=command)
+        await command_handler.handle(command=command)
         
     async def login_user(self, email: str, password: str) -> LoginUserResponse:
         command = LoginUserCommand(email=email, password=password)
