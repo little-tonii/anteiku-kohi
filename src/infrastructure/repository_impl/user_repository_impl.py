@@ -12,6 +12,28 @@ class UserRepositoryImpl(UserRepository):
     def __init__(self, async_session: AsyncSession):
         self.async_session = async_session
         
+    async def activate_by_id(self, id: int) -> bool:
+        async with self.async_session as session:
+            query = (
+                update(UserModel)
+                .where(UserModel.id == id, UserModel.role == UserRole.STAFF, UserModel.is_active == False)
+                .values(is_active=True)
+            )
+            result = await session.execute(query)
+            await session.commit()
+            return result.rowcount > 0
+    
+    async def activate_by_email(self, email: str) -> bool:
+        async with self.async_session as session:
+            query = (
+                update(UserModel)
+                .where(UserModel.email == email, UserModel.role == UserRole.STAFF, UserModel.is_active == False)
+                .values(is_active=True)
+            )
+            result = await session.execute(query)
+            await session.commit()
+            return result.rowcount > 0
+        
     async def get_by_refresh_token(self, refresh_token: str) -> Optional[UserEntity]:
         async with self.async_session as session:
             query = select(UserModel).where(UserModel.refresh_token == refresh_token)

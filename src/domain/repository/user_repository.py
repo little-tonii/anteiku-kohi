@@ -6,6 +6,14 @@ from ...domain.entity.user_entity import UserEntity
 class UserRepository(ABC):
     
     @abstractmethod
+    async def activate_by_id(self, id: int) -> bool:
+        pass
+    
+    @abstractmethod
+    async def activate_by_email(self, email: str) -> bool:
+        pass
+    
+    @abstractmethod
     async def get_by_refresh_token(self, refresh_token: str) -> Optional[UserEntity]:
         pass
     
