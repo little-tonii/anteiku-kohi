@@ -4,7 +4,7 @@ from sqlalchemy import select, update
 from ...domain.entity.user_entity import UserEntity
 from ...domain.repository.user_repository import UserRepository
 from sqlalchemy.ext.asyncio import AsyncSession
-from ...infrastructure.model.user_model import UserModel
+from ...infrastructure.model.user_model import UserModel, UserRole
 
 class UserRepositoryImpl(UserRepository):
     async_session: AsyncSession
@@ -75,22 +75,22 @@ class UserRepositoryImpl(UserRepository):
                 role=user_model.role
             )
     
-    async def delete_by_id(self, id: int) -> bool:
+    async def deactivate_by_id(self, id: int) -> bool:
         async with self.async_session as session:
             query = (
                 update(UserModel)
-                .where(UserModel.id == id)
+                .where(UserModel.id == id, UserModel.role == UserRole.STAFF, UserModel.is_active == True)
                 .values(is_active=False)
             )
             result = await session.execute(query)
             await session.commit()
             return result.rowcount > 0
     
-    async def delete_by_email(self, email: str) -> bool:
+    async def deactivate_by_email(self, email: str) -> bool:
         async with self.async_session as session:
             query = (
                 update(UserModel)
-                .where(UserModel.email == email)
+                .where(UserModel.email == email, UserModel.role == UserRole.STAFF, UserModel.is_active == True)
                 .values(is_active=False)
             )
             result = await session.execute(query)
