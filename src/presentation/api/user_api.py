@@ -11,7 +11,7 @@ from ...infrastructure.config.dependencies import get_user_service
 
 from ...application.schema.request.user_request_schema import GetAccessTokenRequest, LogoutUserRequest, RegisterUserRequest
 
-from ...application.schema.response.user_response_schema import GetAccessTokenResponse, LoginUserResponse, RegisterUserResponse
+from ...application.schema.response.user_response_schema import GetAccessTokenResponse, GetUserInfoResponse, LoginUserResponse, RegisterUserResponse
 from ...application.service.user_service import UserService
 
 router = APIRouter(prefix="/user", tags=["User"])
@@ -37,3 +37,10 @@ async def register(user_service: Annotated[UserService, Depends(get_user_service
 @router.post(path="/refresh", status_code=status.HTTP_200_OK, response_model=GetAccessTokenResponse)
 async def get_access_token(user_service: Annotated[UserService, Depends(get_user_service)], request: GetAccessTokenRequest):
     return await user_service.create_access_token(refresh_token=request.refresh_token)
+
+@router.get(path="/info", status_code=status.HTTP_200_OK, response_model=GetUserInfoResponse)
+async def get_info(
+    claims: Annotated[TokenClaims, Depends(verify_access_token)],
+    user_service: Annotated[UserService, Depends(get_user_service)]
+):
+    return await user_service.get_user_info(id=claims.id)
