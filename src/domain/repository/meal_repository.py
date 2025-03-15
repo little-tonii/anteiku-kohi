@@ -25,3 +25,7 @@ class MealRepository(ABC):
     @abstractmethod
     async def deactivate(self, id: int) -> bool:
         pass
+    
+    @abstractmethod
+    async def activate(self, id: int) -> bool:
+        pass

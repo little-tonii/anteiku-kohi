@@ -30,7 +30,7 @@ class MealRepositoryImpl(MealRepository):
                     description=meal_model.description,
                     created_at=meal_model.created_at,
                     updated_at=meal_model.updated_at,
-                    is_avaiable=meal_model.is_available,
+                    is_available=meal_model.is_available,
                     price=meal_model.price
                 )
                 for meal_model in meals
@@ -49,7 +49,7 @@ class MealRepositoryImpl(MealRepository):
                 description=meal_model.description,
                 created_at=meal_model.created_at,
                 updated_at=meal_model.updated_at,
-                is_avaiable=meal_model.is_available,
+                is_available=meal_model.is_available,
                 price=meal_model.price
             )
     
@@ -74,7 +74,7 @@ class MealRepositoryImpl(MealRepository):
                 description=meal_model.description,
                 created_at=meal_model.created_at,
                 updated_at=meal_model.updated_at,
-                is_avaiable=meal_model.is_available,
+                is_available=meal_model.is_available,
                 price=meal_model.price
             )
     
@@ -95,7 +95,7 @@ class MealRepositoryImpl(MealRepository):
                 description=meal_model.description,
                 created_at=meal_model.created_at,
                 updated_at=meal_model.updated_at,
-                is_avaiable=meal_model.is_available,
+                is_available=meal_model.is_available,
                 price=meal_model.price
             )
     
@@ -104,7 +104,7 @@ class MealRepositoryImpl(MealRepository):
             async with session.begin():
                 query = (
                     update(MealModel)
-                    .where(MealModel.id == id)
+                    .where(MealModel.id == id, MealModel.is_available == True)
                     .values(
                         is_available=False
                     )
@@ -113,6 +113,24 @@ class MealRepositoryImpl(MealRepository):
                 result = await session.execute(query)
                 deactivated_meal = result.scalar()
                 if deactivated_meal:
+                    await session.commit()
+                    return True
+                return False
+            
+    async def activate(self, id: int) -> bool:
+        async with self.async_session as session:
+            async with session.begin():
+                query = (
+                    update(MealModel)
+                    .where(MealModel.id == id, MealModel.is_available == False)
+                    .values(
+                        is_available = True
+                    )
+                    .returning(MealModel)
+                )
+                result = await session.execute(query)
+                activated_meal = result.scalar()
+                if activated_meal:
                     await session.commit()
                     return True
                 return False

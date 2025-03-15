@@ -30,6 +30,6 @@ class CreateMealCommandHandler:
             description=created_meal.description,
             created_at=created_meal.created_at,
             updated_at=created_meal.updated_at,
-            is_avaiable=created_meal.is_avaiable,
+            is_available=created_meal.is_available,
             price=created_meal.price
         )

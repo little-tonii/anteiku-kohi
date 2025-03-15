@@ -7,7 +7,7 @@ class MealEntity:
     description: str
     created_at: datetime
     updated_at: datetime
-    is_avaiable: bool
+    is_available: bool
     price: int
     
     def __init__(self,
@@ -16,7 +16,7 @@ class MealEntity:
         description: str,
         created_at: datetime,
         updated_at: datetime,
-        is_avaiable: bool,
+        is_available: bool,
         price: int
     ):
         self.id = id
@@ -24,5 +24,5 @@ class MealEntity:
         self.description = description
         self.created_at = created_at
         self.updated_at = updated_at
-        self.is_avaiable = is_avaiable
+        self.is_available = is_available
         self.price = price

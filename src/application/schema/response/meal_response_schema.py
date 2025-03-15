@@ -9,5 +9,11 @@ class CreateMealResponse(BaseModel):
     description: str
     created_at: datetime
     updated_at: datetime
-    is_avaiable: bool
+    is_available: bool
     price: int
+    
+class DisableMealResponse(BaseModel):
+    message: str
+    
+class EnableMealResponse(BaseModel):
+    message: str
