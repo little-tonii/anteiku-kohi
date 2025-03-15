@@ -1,3 +1,4 @@
+from fastapi import UploadFile
 from ...application.command.meal.enable_meal_command import EnableMealCommand, EnableMealCommandHandler
 from ...application.command.meal.disable_meal_command import DisableMealCommand, DisableMealCommandHandler
 from ...application.command.meal.create_meal_command import CreateMealCommand, CreateMealCommandHandler
@@ -21,7 +22,7 @@ class MealService:
         command_handler = DisableMealCommandHandler(meal_repository=self.meal_repository)
         return await command_handler.handle(command=command)
         
-    async def create_meal(self, name: str, description: str, price: int) -> CreateMealResponse:
-        command = CreateMealCommand(name=name, description=description, price=price)
+    async def create_meal(self, name: str, description: str, price: int, picture: UploadFile) -> CreateMealResponse:
+        command = CreateMealCommand(name=name, description=description, price=price, picture=picture)
         command_handler = CreateMealCommandHandler(meal_repository=self.meal_repository)
         return await command_handler.handle(command=command)
