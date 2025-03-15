@@ -2,9 +2,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 from starlette import status
 
-from ...infrastructure.utils.validator import validate_meal_description, validate_meal_name, validate_meal_price, validate_picture
+from ...infrastructure.utils.validator import validate_is_available_meal, validate_meal_description, validate_meal_name, validate_meal_price, validate_page, validate_picture, validate_size
 
-from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse
+from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse, GetMealResponse, GetMealsResponse
 from ...application.service.meal_service import MealService
 from ...infrastructure.config.dependencies import get_meal_service
 from ...infrastructure.config.security import verify_access_token
@@ -43,3 +43,16 @@ async def create_meal(
         price=price,
         picture=picture
     )
+    
+@router.get(path="/{id}", status_code=status.HTTP_200_OK, response_model=GetMealResponse)
+async def get_meal_by_id(meal_service: Annotated[MealService, Depends(get_meal_service)], id: int):
+    return await meal_service.get_meal_by_id(id=id)
+
+@router.get(path="/", status_code=status.HTTP_200_OK, response_model=GetMealsResponse)
+async def get_meals(
+    meal_service: Annotated[MealService, Depends(get_meal_service)], 
+    size: int = Depends(validate_size), 
+    page: int = Depends(validate_page),
+    is_available: bool | None = Depends(validate_is_available_meal)
+): 
+    return await meal_service.get_meals(page=page, size=size, is_available=is_available)
