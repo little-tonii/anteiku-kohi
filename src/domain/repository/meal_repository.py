@@ -7,7 +7,7 @@ from ...domain.entity.meal_entity import MealEntity
 class MealRepository(ABC):
     
     @abstractmethod
-    async def get_list(self, page: int, size: int) -> list[MealEntity]:
+    async def get_list(self, page: int, size: int, is_available: bool | None) -> list[MealEntity]:
         pass
     
     @abstractmethod

@@ -13,14 +13,12 @@ class MealRepositoryImpl(MealRepository):
     def __init__(self, async_session: AsyncSession):
         self.async_session = async_session
         
-    async def get_list(self, page: int, size: int) -> list[MealEntity]:
+    async def get_list(self, page: int, size: int, is_available: bool | None) -> list[MealEntity]:
         async with self.async_session as session:
-            query = (
-                select(MealModel)
-                .where(MealModel.is_available == True)
-                .offset((page - 1) * size)
-                .limit(size)
-            )
+            query = select(MealModel)
+            if is_available is not None:
+                query = query.where(MealModel.is_available == is_available)
+            query = query.offset((page - 1) * size).limit(size)
             result = await session.execute(query)
             meals = list(result.scalars())
             return [

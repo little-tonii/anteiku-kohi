@@ -1,6 +1,6 @@
 import io
 import PIL.Image
-from fastapi import File, Form, HTTPException, UploadFile
+from fastapi import File, Form, HTTPException, Query, UploadFile
 from starlette import status
 import email_validator
 
@@ -46,3 +46,21 @@ async def validate_picture(picture: UploadFile = File(...)) -> UploadFile:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Vui lòng chọn ảnh có kích thước dưới 10 MB")
     picture.file.seek(0)
     return picture
+
+async def validate_is_available_meal(is_available: bool | None = Query(None)) -> bool | None:
+    if is_available not in [True, False, None]:  
+        raise HTTPException(
+            status_code=400,
+            detail="Tham số có sẵn phải là true hoặc false (tham số không bắt buộc)"
+        )
+    return is_available
+
+async def validate_page(page: int = Query(...)) -> int:
+    if page < 1:
+        raise HTTPException(status_code=400, detail="Số trang phải bắt đầu từ 1")
+    return page
+
+async def validate_size(size: int = Query(...)) -> int:
+    if size < 1:
+        raise HTTPException(status_code=400, detail="Kích thước trang phải lớn hơn hoặc bằng 1")
+    return size
