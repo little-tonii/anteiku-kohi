@@ -4,6 +4,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import ValidationError
 
+from .presentation.api import meal_api
+
 from .presentation.api import manager_api
 
 from .infrastructure.config.database import init_db
@@ -32,6 +34,7 @@ app.add_middleware(
 
 app.include_router(user_api.router)
 app.include_router(manager_api.router)
+app.include_router(meal_api.router)
 
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(ValidationError, validation_exception_handler)
