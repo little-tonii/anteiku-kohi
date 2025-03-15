@@ -10,7 +10,7 @@ class LogoutUserRequest(BaseModel):
     def validate_refresh_token(cls, value: str):
         if not value.strip():
             raise ValueError("Refresh token không được để trống")
-        return value
+        return value.strip()
 
 class RegisterUserRequest(BaseModel):
     email: str
@@ -45,7 +45,7 @@ class RegisterUserRequest(BaseModel):
         cleaned_name = value.strip()
         if not cleaned_name:
             raise ValueError("Họ và tên không được để trống")
-        return cleaned_name
+        return cleaned_name.strip()
     
     @field_validator("phone_number")
     @classmethod
@@ -53,11 +53,11 @@ class RegisterUserRequest(BaseModel):
         phone_pattern = re.compile(r"^(0\d{9}|\+84\d{9})$")
         if not phone_pattern.match(value):
             raise ValueError("Số điện thoại không hợp lệ")
-        return value
+        return value.strip()
     
     @field_validator("address")
     @classmethod
     def check_address(cls, value: str):
         if not value.strip():
             raise ValueError("Địa chỉ không được để trống")
-        return value
+        return value.strip()

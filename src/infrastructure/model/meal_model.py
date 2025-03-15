@@ -12,3 +12,4 @@ class MealModel(Base):
     is_available: bool = Column(Boolean, default=True, nullable=False)
     created_at: datetime = Column(DateTime, default=func.now(), nullable=False)
     updated_at: datetime = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    image_url: str = Column(String, nullable=False)

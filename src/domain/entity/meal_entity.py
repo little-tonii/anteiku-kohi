@@ -9,6 +9,7 @@ class MealEntity:
     updated_at: datetime
     is_available: bool
     price: int
+    image_url: str
     
     def __init__(self,
         id: int,
@@ -17,7 +18,8 @@ class MealEntity:
         created_at: datetime,
         updated_at: datetime,
         is_available: bool,
-        price: int
+        price: int,
+        image_url: str
     ):
         self.id = id
         self.name = name
@@ -26,3 +28,4 @@ class MealEntity:
         self.updated_at = updated_at
         self.is_available = is_available
         self.price = price
+        self.image_url = image_url

@@ -11,6 +11,7 @@ class CreateMealResponse(BaseModel):
     updated_at: datetime
     is_available: bool
     price: int
+    image_url: str
     
 class DisableMealResponse(BaseModel):
     message: str

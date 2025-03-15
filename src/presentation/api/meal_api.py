@@ -1,8 +1,9 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, Form, UploadFile
 from starlette import status
 
-from ...application.schema.request.meal_request_schema import CreateMealRequest
+from ...infrastructure.utils.validator import validate_meal_description, validate_meal_name, validate_meal_price, validate_picture
+
 from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse
 from ...application.service.meal_service import MealService
 from ...infrastructure.config.dependencies import get_meal_service
@@ -31,10 +32,14 @@ async def disable_meal(
 async def create_meal(
     claims: Annotated[TokenClaims, Depends(verify_access_token)],
     meal_service: Annotated[MealService, Depends(get_meal_service)],
-    request: CreateMealRequest
+    name: str = Depends(validate_meal_name),
+    description: str = Depends(validate_meal_description),
+    price: int = Depends(validate_meal_price),
+    picture: UploadFile = Depends(validate_picture)
 ):
     return await meal_service.create_meal(
-        name=request.name, 
-        description=request.description, 
-        price=request.price
+        name=name, 
+        description=description, 
+        price=price,
+        picture=picture
     )

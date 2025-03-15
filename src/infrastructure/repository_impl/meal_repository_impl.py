@@ -31,7 +31,8 @@ class MealRepositoryImpl(MealRepository):
                     created_at=meal_model.created_at,
                     updated_at=meal_model.updated_at,
                     is_available=meal_model.is_available,
-                    price=meal_model.price
+                    price=meal_model.price,
+                    image_url=meal_model.image_url
                 )
                 for meal_model in meals
             ]
@@ -50,7 +51,8 @@ class MealRepositoryImpl(MealRepository):
                 created_at=meal_model.created_at,
                 updated_at=meal_model.updated_at,
                 is_available=meal_model.is_available,
-                price=meal_model.price
+                price=meal_model.price,
+                image_url=meal_model.image_url
             )
     
     async def update(self, meal_entity: MealEntity) -> MealEntity:
@@ -62,7 +64,8 @@ class MealRepositoryImpl(MealRepository):
                     .values(
                         name=meal_entity.name,
                         description=meal_entity.description,
-                        price=meal_entity.price
+                        price=meal_entity.price,
+                        image_url=meal_entity.image_url
                     )
                     .returning(MealModel)
                 )
@@ -75,14 +78,16 @@ class MealRepositoryImpl(MealRepository):
                 created_at=meal_model.created_at,
                 updated_at=meal_model.updated_at,
                 is_available=meal_model.is_available,
-                price=meal_model.price
+                price=meal_model.price,
+                image_url=meal_model.image_url
             )
     
-    async def create(self, name: str, description: str, price: int) -> MealEntity:
+    async def create(self, name: str, description: str, price: int, image_url: str) -> MealEntity:
         meal_model = MealModel(
             name=name,
             description=description,
-            price=price
+            price=price,
+            image_url=image_url
         )
         async with self.async_session as session:
             async with session.begin():
@@ -96,7 +101,8 @@ class MealRepositoryImpl(MealRepository):
                 created_at=meal_model.created_at,
                 updated_at=meal_model.updated_at,
                 is_available=meal_model.is_available,
-                price=meal_model.price
+                price=meal_model.price,
+                image_url=meal_model.image_url
             )
     
     async def deactivate(self, id: int) -> bool:

@@ -1,8 +1,12 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
+
+from .infrastructure.config.variables import UPLOAD_FOLDER
 
 from .presentation.api import meal_api
 
@@ -31,6 +35,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
+
+app.mount("/public/images", StaticFiles(directory=UPLOAD_FOLDER), name="images")
 
 app.include_router(user_api.router)
 app.include_router(manager_api.router)

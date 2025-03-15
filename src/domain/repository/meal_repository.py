@@ -19,7 +19,7 @@ class MealRepository(ABC):
         pass
     
     @abstractmethod
-    async def create(self, name: str, description: str, price: int) -> MealEntity:
+    async def create(self, name: str, description: str, price: int, image_url: str) -> MealEntity:
         pass
     
     @abstractmethod
