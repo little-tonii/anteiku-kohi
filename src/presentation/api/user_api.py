@@ -9,9 +9,9 @@ from ...infrastructure.utils.token_util import TokenClaims
 
 from ...infrastructure.config.dependencies import get_user_service
 
-from ...application.schema.request.user_request_schema import LogoutUserRequest, RegisterUserRequest
+from ...application.schema.request.user_request_schema import GetAccessTokenRequest, LogoutUserRequest, RegisterUserRequest
 
-from ...application.schema.response.user_response_schema import LoginUserResponse, RegisterUserResponse
+from ...application.schema.response.user_response_schema import GetAccessTokenResponse, LoginUserResponse, RegisterUserResponse
 from ...application.service.user_service import UserService
 
 router = APIRouter(prefix="/user", tags=["User"])
@@ -33,3 +33,7 @@ async def register(user_service: Annotated[UserService, Depends(get_user_service
         address=request.address,
         password=request.password
     )
+    
+@router.post(path="/refresh", status_code=status.HTTP_200_OK, response_model=GetAccessTokenResponse)
+async def get_access_token(user_service: Annotated[UserService, Depends(get_user_service)], request: GetAccessTokenRequest):
+    return await user_service.create_access_token(refresh_token=request.refresh_token)

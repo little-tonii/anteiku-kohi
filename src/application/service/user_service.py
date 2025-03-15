@@ -1,9 +1,10 @@
+from ...application.query.user.create_access_token_query import CreateAccessTokenQuery, CreateAccessTokenQueryHandler
 from ...application.command.user.logout_user_command import LogoutUserCommand, LogoutUserCommandHandler
 from ...domain.repository.user_repository import UserRepository
 from ...application.command.user.register_user_command import RegisterUserCommand, RegisterUserCommandHandler
 
 from ...application.command.user.login_user_command import LoginUserCommand, LoginUserCommandHandler
-from ...application.schema.response.user_response_schema import LoginUserResponse, RegisterUserResponse
+from ...application.schema.response.user_response_schema import GetAccessTokenResponse, LoginUserResponse, RegisterUserResponse
 
 class UserService:
     
@@ -32,3 +33,8 @@ class UserService:
         )
         command_handler = RegisterUserCommandHandler(user_repository=self.user_repository)
         return await command_handler.handle(command=command)
+    
+    async def create_access_token(self, refresh_token: str) -> GetAccessTokenResponse:
+        query = CreateAccessTokenQuery(refresh_token=refresh_token)
+        query_handler = CreateAccessTokenQueryHandler(user_repository=self.user_repository)
+        return await query_handler.handle(query=query)
