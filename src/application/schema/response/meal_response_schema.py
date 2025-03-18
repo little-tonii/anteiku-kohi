@@ -35,3 +35,12 @@ class DisableMealResponse(BaseModel):
     
 class EnableMealResponse(BaseModel):
     message: str
+    
+class UpdateMealDataResponse(BaseModel):
+    id: int
+    name: str
+    description: str
+    created_at: datetime
+    updated_at: datetime
+    is_available: bool
+    price: int
