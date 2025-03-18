@@ -17,7 +17,6 @@ class OrderEntity:
     id: int
     meals: list[int]
     order_status: str
-    total: int
     created_at: datetime
     updated_at: datetime
     payment_status: str
@@ -28,7 +27,6 @@ class OrderEntity:
         id: int, 
         meals: list[int],
         status: str, 
-        total: int, 
         created_at: datetime,
         updated_at: datetime,
         payment_status: str
@@ -36,7 +34,6 @@ class OrderEntity:
         self.id = id
         self.meals = meals
         self.status = status
-        self.total = total
         self.created_at = created_at
         self.updated_at = updated_at
         self.payment_status = payment_status

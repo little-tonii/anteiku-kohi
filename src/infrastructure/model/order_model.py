@@ -27,7 +27,7 @@ class OrderModel(Base):
     __tablename__ = "orders"
     
     id: int = Column(Integer, primary_key=True, autoincrement=True, index=True)
-    staff_id: int = Column(Integer, ForeignKey("users.id"), nullable=False)
+    staff_id: int = Column(Integer, ForeignKey("users.id"), nullable=True)
     order_status: str = Column(sqlalchemy.Enum(OrderStatus), default=OrderStatus.ONQUEUE, nullable=False)
     payment_status: str = Column(sqlalchemy.Enum(PaymentStatus), default=PaymentStatus.PENDING, nullable=False)
     created_at: datetime = Column(DateTime, default=func.now(), nullable=False)
