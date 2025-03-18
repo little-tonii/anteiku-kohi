@@ -7,7 +7,7 @@ from sqlalchemy.orm import relationship
 from ...infrastructure.model.user_model import UserModel
 
 from ...infrastructure.model.meal_model import MealModel
-from ...infrastructure.model import order_meal_association
+from . import order_meal_model
 from ...infrastructure.config.database import Base
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
 
@@ -28,9 +28,7 @@ class OrderModel(Base):
     
     id: int = Column(Integer, primary_key=True, autoincrement=True, index=True)
     staff_id: int = Column(Integer, ForeignKey("users.id"), nullable=False)
-    total: int = Column(Integer, nullable=False)
     order_status: str = Column(sqlalchemy.Enum(OrderStatus), default=OrderStatus.ONQUEUE, nullable=False)
     payment_status: str = Column(sqlalchemy.Enum(PaymentStatus), default=PaymentStatus.PENDING, nullable=False)
     created_at: datetime = Column(DateTime, default=func.now(), nullable=False)
     updated_at: datetime = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-    meals: MealModel = relationship("MealModel", secondary=order_meal_association, back_populates="orders")
