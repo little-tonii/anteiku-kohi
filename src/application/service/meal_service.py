@@ -1,4 +1,9 @@
+from typing import Optional
 from fastapi import UploadFile
+
+from ...application.command.meal.update_meal_image_command import UpdateMealImageCommand, UpdateMealImageCommandHandler
+
+from ...application.command.meal.update_meal_data_command import UpdateMealDataCommand, UpdateMealDataCommandHandler
 
 from ...application.query.meal.get_meals_query import GetMealsQuery, GetMealsQueryHandler
 
@@ -6,7 +11,7 @@ from ...application.query.meal.get_meal_by_id_query import GetMealByIdQuery, Get
 from ...application.command.meal.enable_meal_command import EnableMealCommand, EnableMealCommandHandler
 from ...application.command.meal.disable_meal_command import DisableMealCommand, DisableMealCommandHandler
 from ...application.command.meal.create_meal_command import CreateMealCommand, CreateMealCommandHandler
-from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse, GetMealResponse, GetMealsResponse
+from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse, GetMealResponse, GetMealsResponse, UpdateMealDataResponse
 from ...domain.repository.meal_repository import MealRepository
 
 
@@ -40,3 +45,21 @@ class MealService:
         query = GetMealsQuery(page=page, size=size, is_available=is_available)
         query_handler = GetMealsQueryHandler(meal_repository=self.meal_repository)
         return await query_handler.handle(query=query)
+    
+    async def update_meal_data(self, id: int, name: Optional[str], description: Optional[str], price: Optional[int]) -> UpdateMealDataResponse:
+        command = UpdateMealDataCommand(
+            id=id,
+            name=name,
+            description=description,
+            price=price
+        )
+        command_handler = UpdateMealDataCommandHandler(meal_repository=self.meal_repository)
+        return await command_handler.handle(command=command)
+    
+    async def update_meal_image(self, id: int, picture: UploadFile) -> UpdateMealDataResponse:
+        command = UpdateMealImageCommand(
+            id=id,
+            picture=picture
+        )
+        command_handler = UpdateMealImageCommandHandler(meal_repository=self.meal_repository)
+        return await command_handler.handle(command=command)

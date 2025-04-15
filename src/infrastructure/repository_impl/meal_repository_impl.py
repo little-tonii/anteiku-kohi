@@ -9,10 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 class MealRepositoryImpl(MealRepository):
     async_session: AsyncSession
-    
+
     def __init__(self, async_session: AsyncSession):
         self.async_session = async_session
-        
+
     async def get_list(self, page: int, size: int, is_available: bool | None) -> list[MealEntity]:
         async with self.async_session as session:
             query = select(MealModel)
@@ -34,7 +34,7 @@ class MealRepositoryImpl(MealRepository):
                 )
                 for meal_model in meals
             ]
-            
+
     async def get_by_id(self, id: int) -> Optional[MealEntity]:
         async with self.async_session as session:
             query = select(MealModel).where(MealModel.id == id)
@@ -52,8 +52,8 @@ class MealRepositoryImpl(MealRepository):
                 price=meal_model.price,
                 image_url=meal_model.image_url
             )
-    
-    async def update(self, meal_entity: MealEntity) -> MealEntity:
+
+    async def update(self, meal_entity: MealEntity) -> Optional[MealEntity]:
         async with self.async_session as session:
             async with session.begin():
                 query= (
@@ -68,7 +68,10 @@ class MealRepositoryImpl(MealRepository):
                     .returning(MealModel)
                 )
                 result = await session.execute(query)
-                meal_model = result.scalar_one()
+                meal_model = result.scalar_one_or_none()
+                if not meal_model:
+                    return None
+            await session.refresh(meal_model)
             return MealEntity(
                 id=meal_model.id,
                 name=meal_model.name,
@@ -79,7 +82,7 @@ class MealRepositoryImpl(MealRepository):
                 price=meal_model.price,
                 image_url=meal_model.image_url
             )
-    
+
     async def create(self, name: str, description: str, price: int, image_url: str) -> MealEntity:
         meal_model = MealModel(
             name=name,
@@ -102,7 +105,7 @@ class MealRepositoryImpl(MealRepository):
                 price=meal_model.price,
                 image_url=meal_model.image_url
             )
-    
+
     async def deactivate(self, id: int) -> bool:
         async with self.async_session as session:
             async with session.begin():
@@ -120,7 +123,7 @@ class MealRepositoryImpl(MealRepository):
                     await session.commit()
                     return True
                 return False
-            
+
     async def activate(self, id: int) -> bool:
         async with self.async_session as session:
             async with session.begin():

@@ -2,9 +2,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 from starlette import status
 
+from ...application.schema.request.meal_request_schema import UpdateMealDataRequest
+
 from ...infrastructure.utils.validator import validate_is_available_meal, validate_meal_description, validate_meal_name, validate_meal_price, validate_page, validate_picture, validate_size
 
-from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse, GetMealResponse, GetMealsResponse
+from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse, GetMealResponse, GetMealsResponse, UpdateMealDataResponse, UpdateMealImageResponse
 from ...application.service.meal_service import MealService
 from ...infrastructure.config.dependencies import get_meal_service
 from ...infrastructure.config.security import verify_access_token
@@ -56,3 +58,26 @@ async def get_meals(
     is_available: bool | None = Depends(validate_is_available_meal)
 ): 
     return await meal_service.get_meals(page=page, size=size, is_available=is_available)
+
+@router.patch(path="/update-data/{id}", status_code=status.HTTP_200_OK, response_model=UpdateMealDataResponse)
+async def update_meal_data(
+    claims: Annotated[TokenClaims, Depends(verify_access_token)],
+    meal_service: Annotated[MealService, Depends(get_meal_service)],
+    id: int,
+    request: UpdateMealDataRequest
+):
+    return await meal_service.update_meal_data(
+        id=id,
+        name=request.name,
+        description=request.description,
+        price=request.price
+    )
+
+@router.put(path="/update-image/{id}", status_code=status.HTTP_200_OK, response_model=UpdateMealImageResponse)
+async def update_meal_image(
+    claims: Annotated[TokenClaims, Depends(verify_access_token)],
+    meal_service: Annotated[MealService, Depends(get_meal_service)],
+    id: int,
+    picture: UploadFile = Depends(validate_picture)
+):
+    return await meal_service.update_meal_image(id=id, picture=picture)

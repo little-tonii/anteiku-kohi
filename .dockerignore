@@ -7,3 +7,7 @@ __pycache__/
 venv/
 .vscode/
 public/images/
+Dockerfile
+docker-compose.yml
+.dockerignore
+.gitignore
