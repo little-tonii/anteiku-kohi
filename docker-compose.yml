@@ -34,6 +34,8 @@ services:
       - "8000:8000"
     volumes:
       - .:/src
+      - meal_images:/public/images
 
 volumes:
   postgres_data:
+  meal_images:

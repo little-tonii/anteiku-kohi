@@ -23,14 +23,14 @@ class MealRepositoryImpl(MealRepository):
             meals = list(result.scalars())
             return [
                 MealEntity(
-                    id=meal_model.id,
-                    name=meal_model.name,
-                    description=meal_model.description,
-                    created_at=meal_model.created_at,
-                    updated_at=meal_model.updated_at,
-                    is_available=meal_model.is_available,
-                    price=meal_model.price,
-                    image_url=meal_model.image_url
+                    id=meal_model.id, # type: ignore
+                    name=meal_model.name, # type: ignore
+                    description=meal_model.description, # type: ignore
+                    created_at=meal_model.created_at, # type: ignore
+                    updated_at=meal_model.updated_at, # type: ignore
+                    is_available=meal_model.is_available, # type: ignore
+                    price=meal_model.price, # type: ignore
+                    image_url=meal_model.image_url # type: ignore
                 )
                 for meal_model in meals
             ]
@@ -43,14 +43,14 @@ class MealRepositoryImpl(MealRepository):
             if not meal_model:
                 return None
             return MealEntity(
-                id=meal_model.id,
-                name=meal_model.name,
-                description=meal_model.description,
-                created_at=meal_model.created_at,
-                updated_at=meal_model.updated_at,
-                is_available=meal_model.is_available,
-                price=meal_model.price,
-                image_url=meal_model.image_url
+                id=meal_model.id, # type: ignore
+                name=meal_model.name, # type: ignore
+                description=meal_model.description, # type: ignore
+                created_at=meal_model.created_at, # type: ignore
+                updated_at=meal_model.updated_at, # type: ignore
+                is_available=meal_model.is_available, # type: ignore
+                price=meal_model.price, # type: ignore
+                image_url=meal_model.image_url # type: ignore
             )
 
     async def update(self, meal_entity: MealEntity) -> Optional[MealEntity]:
@@ -73,14 +73,14 @@ class MealRepositoryImpl(MealRepository):
                     return None
             await session.refresh(meal_model)
             return MealEntity(
-                id=meal_model.id,
-                name=meal_model.name,
-                description=meal_model.description,
-                created_at=meal_model.created_at,
-                updated_at=meal_model.updated_at,
-                is_available=meal_model.is_available,
-                price=meal_model.price,
-                image_url=meal_model.image_url
+                id=meal_model.id, # type: ignore
+                name=meal_model.name, # type: ignore
+                description=meal_model.description, # type: ignore
+                created_at=meal_model.created_at, # type: ignore
+                updated_at=meal_model.updated_at, # type: ignore
+                is_available=meal_model.is_available, # type: ignore
+                price=meal_model.price, # type: ignore
+                image_url=meal_model.image_url # type: ignore
             )
 
     async def create(self, name: str, description: str, price: int, image_url: str) -> MealEntity:
@@ -96,14 +96,14 @@ class MealRepositoryImpl(MealRepository):
                 await session.flush()
             await session.refresh(meal_model)
             return MealEntity(
-                id=meal_model.id,
-                name=meal_model.name,
-                description=meal_model.description,
-                created_at=meal_model.created_at,
-                updated_at=meal_model.updated_at,
-                is_available=meal_model.is_available,
-                price=meal_model.price,
-                image_url=meal_model.image_url
+                id=meal_model.id, # type: ignore
+                name=meal_model.name, # type: ignore
+                description=meal_model.description, # type: ignore
+                created_at=meal_model.created_at, # type: ignore
+                updated_at=meal_model.updated_at, # type: ignore
+                is_available=meal_model.is_available, # type: ignore
+                price=meal_model.price, # type: ignore
+                image_url=meal_model.image_url # type: ignore
             )
 
     async def deactivate(self, id: int) -> bool:

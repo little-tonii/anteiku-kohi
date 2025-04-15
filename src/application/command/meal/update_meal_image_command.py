@@ -29,7 +29,7 @@ class UpdateMealImageCommandHandler:
         if not meal_entity:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Món ăn không tồn tại")
         old_image_url = meal_entity.image_url.lstrip("/")
-        file_extension = Path(command.picture.filename).suffix
+        file_extension = Path(command.picture.filename or "unknown_file").suffix
         new_filename = f"{uuid.uuid4()}{file_extension}"
         file_path = Path(UPLOAD_FOLDER) / new_filename
         with file_path.open("wb") as buffer:

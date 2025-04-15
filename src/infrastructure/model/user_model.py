@@ -1,4 +1,3 @@
-from datetime import datetime
 import enum
 import sqlalchemy
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, func
@@ -10,15 +9,15 @@ class UserRole(str, enum.Enum):
 
 class UserModel(Base):
     __tablename__ = "users"
-    
-    id: int = Column(Integer, primary_key=True, autoincrement=True, index=True)
-    full_name: str = Column(String, nullable=False)
-    phone_number: str = Column(String, nullable=False)
-    email: str = Column(String, nullable=False, unique=True, index=True)
-    address: str = Column(String, nullable=False)
-    updated_at: datetime = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
-    joined_at: datetime = Column(DateTime, default=func.now(), nullable=False)
-    is_active: bool = Column(Boolean, nullable=False, default=True)
-    hashed_password: str = Column(String, nullable=False)
-    refresh_token: str | None = Column(String, nullable=True)
-    role: str = Column(sqlalchemy.Enum(UserRole), nullable=False, default=UserRole.STAFF)
+
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
+    full_name = Column(String, nullable=False)
+    phone_number = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True, index=True)
+    address = Column(String, nullable=False)
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    joined_at = Column(DateTime, default=func.now(), nullable=False)
+    is_active = Column(Boolean, nullable=False, default=True)
+    hashed_password = Column(String, nullable=False)
+    refresh_token = Column(String, nullable=True)
+    role = Column(sqlalchemy.Enum(UserRole), nullable=False, default=UserRole.STAFF)
