@@ -44,3 +44,7 @@ class UpdateMealDataResponse(BaseModel):
     updated_at: datetime
     is_available: bool
     price: int
+    
+class UpdateMealImageResponse(BaseModel):
+    id: int
+    image_url: str

@@ -1,6 +1,8 @@
 from typing import Optional
 from fastapi import UploadFile
 
+from ...application.command.meal.update_meal_image_command import UpdateMealImageCommand, UpdateMealImageCommandHandler
+
 from ...application.command.meal.update_meal_data_command import UpdateMealDataCommand, UpdateMealDataCommandHandler
 
 from ...application.query.meal.get_meals_query import GetMealsQuery, GetMealsQueryHandler
@@ -52,4 +54,12 @@ class MealService:
             price=price
         )
         command_handler = UpdateMealDataCommandHandler(meal_repository=self.meal_repository)
+        return await command_handler.handle(command=command)
+    
+    async def update_meal_image(self, id: int, picture: UploadFile) -> UpdateMealDataResponse:
+        command = UpdateMealImageCommand(
+            id=id,
+            picture=picture
+        )
+        command_handler = UpdateMealImageCommandHandler(meal_repository=self.meal_repository)
         return await command_handler.handle(command=command)

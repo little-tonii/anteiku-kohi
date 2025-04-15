@@ -6,7 +6,7 @@ from ...application.schema.request.meal_request_schema import UpdateMealDataRequ
 
 from ...infrastructure.utils.validator import validate_is_available_meal, validate_meal_description, validate_meal_name, validate_meal_price, validate_page, validate_picture, validate_size
 
-from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse, GetMealResponse, GetMealsResponse, UpdateMealDataResponse
+from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse, GetMealResponse, GetMealsResponse, UpdateMealDataResponse, UpdateMealImageResponse
 from ...application.service.meal_service import MealService
 from ...infrastructure.config.dependencies import get_meal_service
 from ...infrastructure.config.security import verify_access_token
@@ -72,3 +72,12 @@ async def update_meal_data(
         description=request.description,
         price=request.price
     )
+
+@router.put(path="/update-image/{id}", status_code=status.HTTP_200_OK, response_model=UpdateMealImageResponse)
+async def update_meal_image(
+    claims: Annotated[TokenClaims, Depends(verify_access_token)],
+    meal_service: Annotated[MealService, Depends(get_meal_service)],
+    id: int,
+    picture: UploadFile = Depends(validate_picture)
+):
+    return await meal_service.update_meal_image(id=id, picture=picture)
