@@ -2,7 +2,6 @@ from fastapi import HTTPException
 from starlette import status
 from ....application.schema.response.user_response_schema import LoginUserResponse
 from ....domain.repository.user_repository import UserRepository
-from ....infrastructure.repository_impl.user_repository_impl import UserRepositoryImpl
 from ....infrastructure.utils.token_util import create_access_token, create_refresh_token
 
 from ....infrastructure.config.cryptography import bcrypt_context
@@ -10,17 +9,17 @@ from ....infrastructure.config.cryptography import bcrypt_context
 class LoginUserCommand:
     email: str
     password: str
-    
+
     def __init__(self, email: str, password: str):
         self.email = email
         self.password = password
-        
+
 class LoginUserCommandHandler:
     user_repository: UserRepository
-    
-    def __init__(self, user_repository: UserRepositoryImpl):
+
+    def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
-    
+
     async def handle(self, command: LoginUserCommand) -> LoginUserResponse:
         user_entity = await self.user_repository.get_by_email(email=command.email)
         if not user_entity:

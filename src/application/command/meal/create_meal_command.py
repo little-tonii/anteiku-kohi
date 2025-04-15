@@ -13,28 +13,28 @@ class CreateMealCommand:
     description: str
     price: int
     picture: UploadFile
-    
-    def __init__(self, name: str, description: str, price: int, picture = UploadFile):
+
+    def __init__(self, name: str, description: str, price: int, picture: UploadFile):
         self.name = name
         self.description = description
         self.price = price
         self.picture = picture
-        
+
 class CreateMealCommandHandler:
     meal_repository: MealRepository
-    
+
     def __init__(self, meal_repository: MealRepository):
         self.meal_repository = meal_repository
-        
+
     async def handle(self, command: CreateMealCommand) -> CreateMealResponse:
-        file_extension = Path(command.picture.filename).suffix
+        file_extension = Path(command.picture.filename or "unknown_file").suffix
         new_filename = f"{uuid.uuid4()}{file_extension}"
         file_path = Path(UPLOAD_FOLDER) / new_filename
         with file_path.open("wb") as buffer:
             shutil.copyfileobj(command.picture.file, buffer)
         image_url = f"/{UPLOAD_FOLDER}/{new_filename}"
         created_meal = await self.meal_repository.create(
-            name=command.name, 
+            name=command.name,
             description=command.description,
             price=command.price,
             image_url=image_url

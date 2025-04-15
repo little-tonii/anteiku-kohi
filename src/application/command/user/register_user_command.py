@@ -1,7 +1,6 @@
 from fastapi import HTTPException
 from ....application.schema.response.user_response_schema import RegisterUserResponse
 from ....domain.repository.user_repository import UserRepository
-from ....infrastructure.repository_impl.user_repository_impl import UserRepositoryImpl
 from starlette import status
 from ....infrastructure.config.cryptography import bcrypt_context
 
@@ -11,21 +10,21 @@ class RegisterUserCommand:
     email: str
     address: str
     password: str
-    
+
     def __init__(self, full_name: str, phone_number: str, address: str, email: str, password: str):
         self.full_name = full_name
         self.phone_number = phone_number
         self.email = email
         self.address = address
         self.password = password
-        
-    
+
+
 class RegisterUserCommandHandler:
     user_repository: UserRepository
-    
-    def __init__(self, user_repository: UserRepositoryImpl):
+
+    def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
-        
+
     async def handle(self, command: RegisterUserCommand) -> RegisterUserResponse:
         if await self.user_repository.get_by_email(email=command.email):
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email đã được sử dụng")
@@ -47,4 +46,3 @@ class RegisterUserCommandHandler:
             is_active=created_user.is_active,
             role=created_user.role
         )
-        
