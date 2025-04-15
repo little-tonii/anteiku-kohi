@@ -8,10 +8,10 @@ from ...infrastructure.model.user_model import UserModel, UserRole
 
 class UserRepositoryImpl(UserRepository):
     async_session: AsyncSession
-    
+
     def __init__(self, async_session: AsyncSession):
         self.async_session = async_session
-        
+
     async def activate_by_id(self, id: int) -> bool:
         async with self.async_session as session:
             query = (
@@ -22,7 +22,7 @@ class UserRepositoryImpl(UserRepository):
             result = await session.execute(query)
             await session.commit()
             return result.rowcount > 0
-    
+
     async def activate_by_email(self, email: str) -> bool:
         async with self.async_session as session:
             query = (
@@ -33,7 +33,7 @@ class UserRepositoryImpl(UserRepository):
             result = await session.execute(query)
             await session.commit()
             return result.rowcount > 0
-        
+
     async def get_by_refresh_token(self, refresh_token: str) -> Optional[UserEntity]:
         async with self.async_session as session:
             query = select(UserModel).where(UserModel.refresh_token == refresh_token)
@@ -42,19 +42,19 @@ class UserRepositoryImpl(UserRepository):
             if not user_model:
                 return None
             return UserEntity(
-                id=user_model.id,
-                full_name=user_model.full_name,
-                phone_number=user_model.phone_number,
-                email=user_model.email,
-                address=user_model.address,
-                updated_at=user_model.updated_at,
-                joined_at=user_model.joined_at,
-                is_active=user_model.is_active,
-                hashed_password=user_model.hashed_password,
-                refresh_token=user_model.refresh_token,
-                role=user_model.role
+                id=user_model.id, # type: ignore
+                full_name=user_model.full_name, # type: ignore
+                phone_number=user_model.phone_number, # type: ignore
+                email=user_model.email, # type: ignore
+                address=user_model.address, # type: ignore
+                updated_at=user_model.updated_at, # type: ignore
+                joined_at=user_model.joined_at, # type: ignore
+                is_active=user_model.is_active, # type: ignore
+                hashed_password=user_model.hashed_password, # type: ignore
+                refresh_token=user_model.refresh_token, # type: ignore
+                role=user_model.role # type: ignore
             )
-        
+
     async def get_by_id(self, id: int) -> Optional[UserEntity]:
         async with self.async_session as session:
             query = select(UserModel).where(UserModel.id == id, UserModel.is_active == True)
@@ -63,19 +63,19 @@ class UserRepositoryImpl(UserRepository):
             if not user_model:
                 return None
             return UserEntity(
-                id=user_model.id,
-                full_name=user_model.full_name,
-                phone_number=user_model.phone_number,
-                email=user_model.email,
-                address=user_model.address,
-                updated_at=user_model.updated_at,
-                joined_at=user_model.joined_at,
-                is_active=user_model.is_active,
-                hashed_password=user_model.hashed_password,
-                refresh_token=user_model.refresh_token,
-                role=user_model.role
+                id=user_model.id, # type: ignore
+                full_name=user_model.full_name, # type: ignore
+                phone_number=user_model.phone_number, # type: ignore
+                email=user_model.email, # type: ignore
+                address=user_model.address, # type: ignore
+                updated_at=user_model.updated_at, # type: ignore
+                joined_at=user_model.joined_at, # type: ignore
+                is_active=user_model.is_active, # type: ignore
+                hashed_password=user_model.hashed_password, # type: ignore
+                refresh_token=user_model.refresh_token, # type: ignore
+                role=user_model.role # type: ignore
             )
-    
+
     async def get_by_email(self, email: str) -> Optional[UserEntity]:
         async with self.async_session as session:
             query = select(UserModel).where(UserModel.email == email, UserModel.is_active == True)
@@ -84,19 +84,19 @@ class UserRepositoryImpl(UserRepository):
             if not user_model:
                 return None
             return UserEntity(
-                id=user_model.id,
-                full_name=user_model.full_name,
-                phone_number=user_model.phone_number,
-                email=user_model.email,
-                address=user_model.address,
-                updated_at=user_model.updated_at,
-                joined_at=user_model.joined_at,
-                is_active=user_model.is_active,
-                hashed_password=user_model.hashed_password,
-                refresh_token=user_model.refresh_token,
-                role=user_model.role
+                id=user_model.id, # type: ignore
+                full_name=user_model.full_name, # type: ignore
+                phone_number=user_model.phone_number, # type: ignore
+                email=user_model.email, # type: ignore
+                address=user_model.address, # type: ignore
+                updated_at=user_model.updated_at, # type: ignore
+                joined_at=user_model.joined_at, # type: ignore
+                is_active=user_model.is_active, # type: ignore
+                hashed_password=user_model.hashed_password, # type: ignore
+                refresh_token=user_model.refresh_token, # type: ignore
+                role=user_model.role # type: ignore
             )
-    
+
     async def deactivate_by_id(self, id: int) -> bool:
         async with self.async_session as session:
             query = (
@@ -107,7 +107,7 @@ class UserRepositoryImpl(UserRepository):
             result = await session.execute(query)
             await session.commit()
             return result.rowcount > 0
-    
+
     async def deactivate_by_email(self, email: str) -> bool:
         async with self.async_session as session:
             query = (
@@ -133,19 +133,19 @@ class UserRepositoryImpl(UserRepository):
                 await session.flush()
             await session.refresh(user_model)
             return UserEntity(
-                id=user_model.id,
-                full_name=user_model.full_name,
-                phone_number=user_model.phone_number,
-                email=user_model.email,
-                address=user_model.address,
-                updated_at=user_model.updated_at,
-                joined_at=user_model.joined_at,
-                is_active=user_model.is_active,
-                hashed_password=user_model.hashed_password,
-                refresh_token=user_model.refresh_token,
-                role=user_model.role
+                id=user_model.id, # type: ignore
+                full_name=user_model.full_name, # type: ignore
+                phone_number=user_model.phone_number, # type: ignore
+                email=user_model.email, # type: ignore
+                address=user_model.address, # type: ignore
+                updated_at=user_model.updated_at, # type: ignore
+                joined_at=user_model.joined_at, # type: ignore
+                is_active=user_model.is_active, # type: ignore
+                hashed_password=user_model.hashed_password, # type: ignore
+                refresh_token=user_model.refresh_token, # type: ignore
+                role=user_model.role # type: ignore
             )
-    
+
     async def update(self, user_entity: UserEntity) -> UserEntity:
         async with self.async_session as session:
             async with session.begin():
@@ -164,15 +164,15 @@ class UserRepositoryImpl(UserRepository):
                 result = await session.execute(query)
                 user_model = result.scalar_one()
             return UserEntity(
-                id=user_model.id,
-                full_name=user_model.full_name,
-                phone_number=user_model.phone_number,
-                email=user_model.email,
-                address=user_model.address,
-                updated_at=user_model.updated_at,
-                joined_at=user_model.joined_at,
-                is_active=user_model.is_active,
-                hashed_password=user_model.hashed_password,
-                refresh_token=user_model.refresh_token,
-                role=user_model.role
+                id=user_model.id, # type: ignore
+                full_name=user_model.full_name, # type: ignore
+                phone_number=user_model.phone_number, # type: ignore
+                email=user_model.email, # type: ignore
+                address=user_model.address, # type: ignore
+                updated_at=user_model.updated_at, # type: ignore
+                joined_at=user_model.joined_at, # type: ignore
+                is_active=user_model.is_active, # type: ignore
+                hashed_password=user_model.hashed_password, # type: ignore
+                refresh_token=user_model.refresh_token, # type: ignore
+                role=user_model.role # type: ignore
             )

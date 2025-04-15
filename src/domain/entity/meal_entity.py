@@ -10,7 +10,7 @@ class MealEntity:
     is_available: bool
     price: int
     image_url: str
-    
+
     def __init__(self,
         id: int,
         name: str,
