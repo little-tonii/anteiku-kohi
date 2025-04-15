@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+from fastapi import APIRouter, Depends, UploadFile
 from starlette import status
 
 from ...application.schema.request.meal_request_schema import UpdateMealDataRequest
@@ -40,23 +40,23 @@ async def create_meal(
     picture: UploadFile = Depends(validate_picture)
 ):
     return await meal_service.create_meal(
-        name=name, 
-        description=description, 
+        name=name,
+        description=description,
         price=price,
         picture=picture
     )
-    
+
 @router.get(path="/{id}", status_code=status.HTTP_200_OK, response_model=GetMealResponse)
 async def get_meal_by_id(meal_service: Annotated[MealService, Depends(get_meal_service)], id: int):
     return await meal_service.get_meal_by_id(id=id)
 
 @router.get(path="/", status_code=status.HTTP_200_OK, response_model=GetMealsResponse)
 async def get_meals(
-    meal_service: Annotated[MealService, Depends(get_meal_service)], 
-    size: int = Depends(validate_size), 
+    meal_service: Annotated[MealService, Depends(get_meal_service)],
+    size: int = Depends(validate_size),
     page: int = Depends(validate_page),
     is_available: bool | None = Depends(validate_is_available_meal)
-): 
+):
     return await meal_service.get_meals(page=page, size=size, is_available=is_available)
 
 @router.patch(path="/update-data/{id}", status_code=status.HTTP_200_OK, response_model=UpdateMealDataResponse)
