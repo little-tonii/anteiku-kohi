@@ -18,6 +18,7 @@ from .presentation.api import user_api
 from .infrastructure.config.database import init_db
 
 from .infrastructure.config.exception_handler import process_http_exception, process_validation_error, process_global_exception
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
 from ..config.database import Base
 
 class OrderMealModel(Base):
@@ -9,3 +9,5 @@ class OrderMealModel(Base):
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     price = Column(Integer, nullable=False)
     quantity = Column(Integer, nullable=False)
+    created_at = Column(DateTime, default=func.now(), nullable=False)
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)

@@ -13,6 +13,8 @@ from ...application.service.user_service import UserService
 from ...infrastructure.repository_impl.user_repository_impl import UserRepositoryImpl
 from ...domain.repository.user_repository import UserRepository
 from ...infrastructure.config.database import AsyncSessionLocal
+from ...domain.repository.order_repository import OrderRepository
+from ...infrastructure.repository_impl.order_repository_impl import OrderRepositoryImpl
 
 # database session
 async def get_db():
@@ -28,6 +30,9 @@ def get_user_repository(async_session: AsyncSession = Depends(get_db)) -> UserRe
 
 def get_meal_repository(async_session: AsyncSession = Depends(get_db)) -> MealRepository:
     return MealRepositoryImpl(async_session=async_session)
+
+def get_order_repository(async_session: AsyncSession = Depends(get_db)) -> OrderRepository:
+    return OrderRepositoryImpl(async_session=async_session)
 
 # service dependencies
 def get_user_service(user_repository: UserRepository = Depends(get_user_repository)) -> UserService:

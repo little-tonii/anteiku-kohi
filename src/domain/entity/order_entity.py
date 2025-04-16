@@ -7,12 +7,12 @@ class OrderStatus:
     ONQUEUE = "ONQUEUE"
     CANCELLED = "CANCELLED"
     PROCESSING = "PROCESSING"
-    
+
 class PaymentStatus:
     PENDING = "PENDING"
     PAID = "PAID"
     REFUNDED = "REFUNDED"
-    
+
 class OrderEntity:
     id: int
     meals: list[int]
@@ -21,19 +21,21 @@ class OrderEntity:
     updated_at: datetime
     payment_status: str
     staff_id: int
-    
+
     def __init__(
-        self, 
-        id: int, 
+        self,
+        id: int,
         meals: list[int],
-        status: str, 
+        order_status: str,
         created_at: datetime,
         updated_at: datetime,
-        payment_status: str
+        payment_status: str,
+        staff_id: int
     ):
         self.id = id
         self.meals = meals
-        self.status = status
+        self.order_status = order_status
         self.created_at = created_at
         self.updated_at = updated_at
         self.payment_status = payment_status
+        self.staff_id = staff_id
