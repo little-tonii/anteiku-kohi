@@ -26,6 +26,8 @@ class LoginUserCommandHandler:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email hoặc mật khẩu không chính xác")
         if not bcrypt_context.verify(command.password, user_entity.hashed_password):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email hoặc mật khẩu không chính xác")
+        if user_entity.is_verified == False:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vui lòng truy cập vào email để xác minh tài khoản")
         refresh_token = create_refresh_token(user_id=user_entity.id, role=user_entity.role)
         access_token = create_access_token(user_id=user_entity.id, role=user_entity.role)
         user_entity.refresh_token = refresh_token

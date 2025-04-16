@@ -44,5 +44,6 @@ class RegisterUserCommandHandler:
             updated_at=created_user.updated_at,
             joined_at=created_user.joined_at,
             is_active=created_user.is_active,
-            role=created_user.role
+            role=created_user.role,
+            is_verified=created_user.is_verified,
         )

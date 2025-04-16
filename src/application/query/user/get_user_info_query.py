@@ -5,16 +5,16 @@ from starlette import status
 
 class GetUserInfoQuery:
     id: int
-    
+
     def __init__(self, id: int):
         self.id = id
-        
+
 class GetUserInfoQueryHandler:
     user_repository: UserRepository
-    
+
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
-        
+
     async def handle(self, query: GetUserInfoQuery) -> GetUserInfoResponse:
         user_entity = await self.user_repository.get_by_id(id=query.id)
         if not user_entity:
@@ -28,5 +28,6 @@ class GetUserInfoQueryHandler:
             updated_at=user_entity.updated_at,
             joined_at=user_entity.joined_at,
             is_active=user_entity.is_active,
-            role=user_entity.role
+            role=user_entity.role,
+            is_verified=user_entity.is_verified,
         )

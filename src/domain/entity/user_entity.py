@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 
 class UserRole:
     STAFF = "STAFF"
@@ -16,20 +16,22 @@ class UserEntity:
     hashed_password: str
     refresh_token: str | None
     role: str
+    is_verified: bool
 
     def __init__(
-        self, 
-        id: int, 
-        full_name: str, 
-        phone_number: str, 
-        email: str, 
-        address: str, 
-        updated_at: datetime, 
-        joined_at: datetime, 
-        is_active: bool, 
-        hashed_password: str, 
-        refresh_token: str, 
-        role: str
+        self,
+        id: int,
+        full_name: str,
+        phone_number: str,
+        email: str,
+        address: str,
+        updated_at: datetime,
+        joined_at: datetime,
+        is_active: bool,
+        hashed_password: str,
+        refresh_token: str,
+        role: str,
+        is_verified: bool
     ):
         self.id = id
         self.full_name = full_name
@@ -42,3 +44,4 @@ class UserEntity:
         self.hashed_password = hashed_password
         self.refresh_token = refresh_token
         self.role = role
+        self.is_verified = is_verified

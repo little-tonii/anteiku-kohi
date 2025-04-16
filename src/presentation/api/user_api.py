@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 
@@ -13,6 +13,7 @@ from ...application.schema.request.user_request_schema import GetAccessTokenRequ
 
 from ...application.schema.response.user_response_schema import GetAccessTokenResponse, GetUserInfoResponse, LoginUserResponse, RegisterUserResponse
 from ...application.service.user_service import UserService
+from ...application.background_task.send_email_verification import send_email_verification
 
 router = APIRouter(prefix="/user", tags=["User"])
 
@@ -25,15 +26,21 @@ async def login(user_service: Annotated[UserService, Depends(get_user_service)],
     return await user_service.login_user(email=login_form.username, password=login_form.password)
 
 @router.post(path="/register", status_code=status.HTTP_201_CREATED, response_model=RegisterUserResponse)
-async def register(user_service: Annotated[UserService, Depends(get_user_service)], request: RegisterUserRequest):
-    return await user_service.register_user(
+async def register(
+    user_service: Annotated[UserService, Depends(get_user_service)],
+    request: RegisterUserRequest,
+    background_tasks: BackgroundTasks
+):
+    response = await user_service.register_user(
         full_name=request.full_name,
         phone_number=request.phone_number,
         email=request.email,
         address=request.address,
         password=request.password
     )
-    
+    background_tasks.add_task(send_email_verification, response.email)
+    return response
+
 @router.post(path="/refresh", status_code=status.HTTP_200_OK, response_model=GetAccessTokenResponse)
 async def get_access_token(user_service: Annotated[UserService, Depends(get_user_service)], request: GetAccessTokenRequest):
     return await user_service.create_access_token(refresh_token=request.refresh_token)
@@ -44,3 +51,10 @@ async def get_info(
     user_service: Annotated[UserService, Depends(get_user_service)]
 ):
     return await user_service.get_user_info(id=claims.id)
+
+@router.get("/email-verification/{token}", status_code=status.HTTP_200_OK)
+async def verify_account(
+    user_service: Annotated[UserService, Depends(get_user_service)],
+    token: str
+):
+    return await user_service.verify_account(token=token)
