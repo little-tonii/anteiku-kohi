@@ -3,16 +3,14 @@ services:
     image: postgres:latest
     container_name: anteiku_kohi_database
     restart: unless-stopped
-    environment:
-      POSTGRES_DB: anteiku_kohi
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: 123456
+    env_file:
+      - .env.database
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d anteiku_kohi"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       retries: 5
       start_period: 30s
@@ -24,12 +22,8 @@ services:
     depends_on:
       anteiku_kohi_database:
         condition: service_healthy
-    environment:
-      DATABASE_URL: postgresql+asyncpg://user:123456@anteiku_kohi_database:5432/anteiku_kohi
-      SECRET_KEY: seret_key
-      HASH_ALGORITHM: HS256
-      ACCESS_TOKEN_EXPIRES: 1440
-      REFRESH_TOKEN_EXPIRES: 10080
+    env_file:
+      - .env.app
     ports:
       - "8000:8000"
     volumes:

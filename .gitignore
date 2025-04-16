@@ -3,3 +3,5 @@ __pycache__/
 venv/
 public/images/
 .ropeproject/
+.env.app
+.env.database
