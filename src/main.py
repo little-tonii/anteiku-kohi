@@ -7,6 +7,8 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 from fastapi import Request
 
+from .presentation.api import order_api
+
 from .infrastructure.config.variables import UPLOAD_FOLDER
 
 from .presentation.api import meal_api
@@ -45,6 +47,7 @@ app.mount("/public/images", StaticFiles(directory=UPLOAD_FOLDER), name="images")
 app.include_router(user_api.router)
 app.include_router(manager_api.router)
 app.include_router(meal_api.router)
+app.include_router(order_api.router)
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):

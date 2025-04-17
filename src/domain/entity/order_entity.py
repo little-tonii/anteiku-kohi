@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 
 class OrderStatus:
@@ -20,7 +21,7 @@ class OrderEntity:
     created_at: datetime
     updated_at: datetime
     payment_status: str
-    staff_id: int
+    staff_id: Optional[int]
 
     def __init__(
         self,
@@ -30,7 +31,7 @@ class OrderEntity:
         created_at: datetime,
         updated_at: datetime,
         payment_status: str,
-        staff_id: int
+        staff_id: Optional[int] = None
     ):
         self.id = id
         self.meals = meals
