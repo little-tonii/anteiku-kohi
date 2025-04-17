@@ -29,5 +29,5 @@ class UpdateOrderStatusResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-class GetPaymentUrlResponse(BaseModel):
+class GetOrderPaymentUrlResponse(BaseModel):
     payment_url: str

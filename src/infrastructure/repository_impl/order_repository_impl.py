@@ -93,7 +93,8 @@ class OrderRepositoryImpl(OrderRepository):
                     created_at=existed_order_model.created_at, # type: ignore
                     order_status=existed_order_model.order_status, # type: ignore
                     payment_status=existed_order_model.payment_status, # type: ignore
-                    staff_id=existed_order_model.staff_id # type: ignore
+                    staff_id=existed_order_model.staff_id, # type: ignore
+                    payment_url=existed_order_model.payment_url, # type: ignore
                 )
 
     async def update_order_staff_id(self, order_id: int, staff_id: int) -> bool:
@@ -145,7 +146,8 @@ class OrderRepositoryImpl(OrderRepository):
                 created_at=order_model.created_at, # type: ignore
                 order_status=order_model.order_status, # type: ignore
                 payment_status=order_model.payment_status, # type: ignore
-                staff_id=order_model.staff_id # type: ignore
+                staff_id=order_model.staff_id, # type: ignore
+                payment_url=order_model.payment_url, # type: ignore
             )
 
     async def update_order_payment_url(self, order_id: int, payment_url: str) -> None:
