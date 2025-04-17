@@ -28,3 +28,7 @@ class OrderRepository(ABC):
     @abstractmethod
     async def find_order_by_id(self, order_id: int) -> Optional[OrderEntity]:
         pass
+
+    @abstractmethod
+    async def update_order_payment_url(self, order_id: int, payment_url: str) -> None:
+        pass

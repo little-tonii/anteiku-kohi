@@ -9,3 +9,9 @@ UPLOAD_FOLDER: str = "public/images"
 ANTEIKU_KOHI_EMAIL: str = str(os.getenv("ANTEIKU_KOHI_EMAIL"))
 ANTEIKU_KOHI_EMAIL_APP_PASSWORD: str = str(os.getenv("ANTEIKU_KOHI_EMAIL_APP_PASSWORD"))
 EMAIL_SALT_VERIFYCATION: str = str(os.getenv("EMAIL_SALT_VERIFYCATION"))
+
+VNPAY_RETURN_URL: str = str(os.getenv("VNPAY_RETURN_URL"))
+VNPAY_PAYMENT_URL: str = str(os.getenv("VNPAY_PAYMENT_URL"))
+VNPAY_API_URL: str = str(os.getenv("VNPAY_API_URL"))
+VNPAY_TMN_CODE: str = str(os.getenv("VNPAY_TMN_CODE"))
+VNPAY_HASH_SECRET_KEY: str = str(os.getenv("VNPAY_HASH_SECRET_KEY"))
