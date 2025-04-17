@@ -2,7 +2,7 @@ import enum
 import sqlalchemy
 
 from ...infrastructure.config.database import Base
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, func
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, func
 
 class OrderStatus(str, enum.Enum):
     ONQUEUE = "ONQUEUE"
@@ -25,3 +25,4 @@ class OrderModel(Base):
     payment_status = Column(sqlalchemy.Enum(PaymentStatus), default=PaymentStatus.PENDING, nullable=False)
     created_at = Column(DateTime, default=func.now(), nullable=False)
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    payment_url = Column(String, nullable=True)

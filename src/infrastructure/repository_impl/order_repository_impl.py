@@ -147,3 +147,14 @@ class OrderRepositoryImpl(OrderRepository):
                 payment_status=order_model.payment_status, # type: ignore
                 staff_id=order_model.staff_id # type: ignore
             )
+
+    async def update_order_payment_url(self, order_id: int, payment_url: str) -> None:
+        async with self.async_session as session:
+            async with session.begin():
+                stmt = (
+                    update(OrderModel)
+                    .where(OrderModel.id == order_id)
+                    .values(payment_url=payment_url)
+                    .returning(OrderModel)
+                )
+                await session.execute(stmt)

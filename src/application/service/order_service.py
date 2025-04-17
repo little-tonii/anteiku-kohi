@@ -19,8 +19,8 @@ class OrderService:
         self.order_repository = order_repository
         self.meal_repository = meal_repository
 
-    async def create_order(self, meals_ids: List[int]) -> CreateOrderResponse:
-        command = CreateOrderCommand(meal_ids=meals_ids)
+    async def create_order(self, meals_ids: List[int], client_ip_address: str) -> CreateOrderResponse:
+        command = CreateOrderCommand(meal_ids=meals_ids, client_ip_address=client_ip_address)
         command_handler = CreateOrderCommandHandler(
             meal_repository=self.meal_repository,
             order_repository=self.order_repository

@@ -28,3 +28,6 @@ class UpdateOrderStatusResponse(BaseModel):
     payment_status: str
     created_at: datetime
     updated_at: datetime
+
+class GetPaymentUrlResponse(BaseModel):
+    payment_url: str
