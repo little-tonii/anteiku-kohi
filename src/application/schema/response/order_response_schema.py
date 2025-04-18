@@ -31,3 +31,9 @@ class UpdateOrderStatusResponse(BaseModel):
 
 class GetOrderPaymentUrlResponse(BaseModel):
     payment_url: str
+
+class HandlePaymentReturnResponse(BaseModel):
+    order_id: int
+    message: str
+    bank_code: str
+    amount: int

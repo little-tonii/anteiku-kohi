@@ -160,3 +160,25 @@ class OrderRepositoryImpl(OrderRepository):
                     .returning(OrderModel)
                 )
                 await session.execute(stmt)
+
+    async def delete_order_payment_url(self, order_id: int) -> None:
+        async with self.async_session as session:
+            async with session.begin():
+                stmt = (
+                    update(OrderModel)
+                    .where(OrderModel.id == order_id)
+                    .values(payment_url=None)
+                    .returning(OrderModel)
+                )
+                await session.execute(stmt)
+
+    async def update_order_payment_status(self, order_id: int, status: str) -> None:
+        async with self.async_session as session:
+            async with session.begin():
+                stmt = (
+                    update(OrderModel)
+                    .where(OrderModel.id == order_id)
+                    .values(payment_status=status)
+                    .returning(OrderModel)
+                )
+                await session.execute(stmt)

@@ -11,7 +11,6 @@ from ....domain.entity.order_meal_entity import OrderMealEntity
 from ....domain.repository.order_repository import OrderRepository
 from ....domain.repository.meal_repository import MealRepository
 from datetime import datetime
-import uuid
 
 class CreateOrderCommand:
     meal_ids: List[int]
@@ -58,7 +57,7 @@ class CreateOrderCommandHandler:
             'vnp_TmnCode': VNPAY_TMN_CODE,
             'vnp_Amount': sum(meal.price * quantity for meal, quantity in meals_with_quantities.items()) * 100,
             'vnp_CurrCode': 'VND',
-            'vnp_TxnRef': str(uuid.uuid4()),
+            'vnp_TxnRef': f'{new_order.id}',
             'vnp_OrderInfo': f'Anteiku Kohi - Mã hóa đơn {new_order.id}',
             'vnp_OrderType': 'Thanh toán hóa đơn',
             'vnp_Locale': 'vn',

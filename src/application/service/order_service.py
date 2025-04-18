@@ -1,5 +1,7 @@
 from typing import List
 
+from ...application.command.order.handle_payment_return_command import HandlePaymentReturnCommand
+
 from ...application.query.order.get_order_payment_url_query import GetOrderPaymentUrlQuery, GetOrderPaymentUrlQueryHandler
 
 from ...application.command.order.update_order_status_command import UpdateOrderStatusCommand, UpdateOrderStatusCommandHandler
@@ -8,9 +10,10 @@ from ...application.command.order.take_responsibility_for_order_command import T
 
 from ...domain.repository.meal_repository import MealRepository
 
-from ...application.schema.response.order_response_schema import CreateOrderResponse, GetOrderPaymentUrlResponse, TakeResponsibilityForOrderResponse, UpdateOrderStatusResponse
+from ...application.schema.response.order_response_schema import CreateOrderResponse, GetOrderPaymentUrlResponse, HandlePaymentReturnResponse, TakeResponsibilityForOrderResponse, UpdateOrderStatusResponse
 from ...domain.repository.order_repository import OrderRepository
 from ...application.command.order.create_order_command import CreateOrderCommand, CreateOrderCommandHandler
+from ...application.command.order.handle_payment_return_command import HandlePaymentReturnCommandHandler
 
 
 class OrderService:
@@ -50,3 +53,8 @@ class OrderService:
             order_repository=self.order_repository
         )
         return await query_handler.handle(query=query)
+
+    async def handle_payment_return(self, query_params: dict) -> HandlePaymentReturnResponse:
+        command = HandlePaymentReturnCommand(query_params=query_params)
+        command_handler = HandlePaymentReturnCommandHandler(order_repository=self.order_repository)
+        return await command_handler.handle(command=command)
