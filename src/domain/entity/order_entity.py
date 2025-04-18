@@ -22,7 +22,6 @@ class OrderEntity:
     updated_at: datetime
     payment_status: str
     staff_id: Optional[int]
-    payment_url: Optional[str]
 
     def __init__(
         self,
@@ -33,7 +32,6 @@ class OrderEntity:
         updated_at: datetime,
         payment_status: str,
         staff_id: Optional[int] = None,
-        payment_url: Optional[str] = None
     ):
         self.id = id
         self.meals = meals
@@ -42,4 +40,3 @@ class OrderEntity:
         self.updated_at = updated_at
         self.payment_status = payment_status
         self.staff_id = staff_id
-        self.payment_url = payment_url

@@ -30,13 +30,5 @@ class OrderRepository(ABC):
         pass
 
     @abstractmethod
-    async def update_order_payment_url(self, order_id: int, payment_url: str) -> None:
-        pass
-
-    @abstractmethod
-    async def delete_order_payment_url(self, order_id: int) -> None:
-        pass
-
-    @abstractmethod
     async def update_order_payment_status(self, order_id: int, status: str) -> None:
         pass

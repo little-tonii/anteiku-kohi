@@ -1,9 +1,8 @@
 from collections import Counter
 from typing import Dict, List
 
-from ....infrastructure.utils.create_payment_url import create_payment_url
-
-from ....infrastructure.config.variables import VNPAY_RETURN_URL, VNPAY_TMN_CODE
+from fastapi import HTTPException
+from starlette import status
 
 from ....application.schema.response.order_response_schema import CreateOrderResponse, OrderMealResponse
 from ....domain.entity.meal_entity import MealEntity
@@ -14,11 +13,9 @@ from datetime import datetime
 
 class CreateOrderCommand:
     meal_ids: List[int]
-    client_ip_address: str
 
-    def __init__(self, meal_ids: List[int], client_ip_address: str):
+    def __init__(self, meal_ids: List[int]):
         self.meal_ids = meal_ids
-        self.client_ip_address = client_ip_address
 
 class CreateOrderCommandHandler:
     order_repository: OrderRepository
@@ -37,6 +34,8 @@ class CreateOrderCommandHandler:
             if meal and meal.is_available:
                 meals_with_quantities[meal] = meal_counts[meal_id]
                 meal_lookup[meal.id] = meal
+        if not meals_with_quantities:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="ID món ăn không hợp lệ")
         new_order = await self.order_repository.create_order(
             meals=[
                 OrderMealEntity(
@@ -51,22 +50,6 @@ class CreateOrderCommandHandler:
                 for meal, quantity in meals_with_quantities.items()
             ]
         )
-        payment_url_params = {
-            'vnp_Version': '2.1.0',
-            'vnp_Command': 'pay',
-            'vnp_TmnCode': VNPAY_TMN_CODE,
-            'vnp_Amount': sum(meal.price * quantity for meal, quantity in meals_with_quantities.items()) * 100,
-            'vnp_CurrCode': 'VND',
-            'vnp_TxnRef': f'{new_order.id}',
-            'vnp_OrderInfo': f'Anteiku Kohi - Mã hóa đơn {new_order.id}',
-            'vnp_OrderType': 'Thanh toán hóa đơn',
-            'vnp_Locale': 'vn',
-            'vnp_CreateDate': new_order.created_at.strftime('%Y%m%d%H%M%S'),
-            'vnp_IpAddr': command.client_ip_address,
-            'vnp_ReturnUrl': VNPAY_RETURN_URL
-        }
-        payment_url = create_payment_url(payment_url_params)
-        await self.order_repository.update_order_payment_url(order_id=new_order.id, payment_url=payment_url)
         order_meal_list = await self.order_repository.get_order_meal_list(order_id=new_order.id)
         return CreateOrderResponse(
             id=new_order.id,

@@ -26,7 +26,7 @@ class HandlePaymentReturnCommandHandler:
         order_id = int(str(command.query_params.get("vnp_TxnRef")))
         response_code: str = str(command.query_params.get("vnp_ResponseCode"))
         bank_code: str = str(command.query_params.get("vnp_BankCode"))
-        amount: int = int(str(command.query_params.get("vnp_Amount")))
+        amount: int = int(int(str(command.query_params.get("vnp_Amount"))) / 100)
 
         order = await self.order_repository.find_order_by_id(order_id=order_id)
         if not order:
@@ -59,7 +59,6 @@ class HandlePaymentReturnCommandHandler:
             )
 
         await self.order_repository.update_order_payment_status(order_id=order_id, status=PaymentStatus.PAID)
-        await self.order_repository.delete_order_payment_url(order_id=order_id)
 
         return HandlePaymentReturnResponse(
             order_id=order_id,
