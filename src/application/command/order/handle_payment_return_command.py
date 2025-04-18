@@ -23,7 +23,7 @@ class HandlePaymentReturnCommandHandler:
         self.order_repository = order_repository
 
     async def handle(self, command: HandlePaymentReturnCommand) -> HandlePaymentReturnResponse:
-        order_id = int(str(command.query_params.get("vnp_TxnRef")))
+        order_id = int(str(command.query_params.get("vnp_TxnRef")).split("-")[1])
         response_code: str = str(command.query_params.get("vnp_ResponseCode"))
         bank_code: str = str(command.query_params.get("vnp_BankCode"))
         amount: int = int(int(str(command.query_params.get("vnp_Amount"))) / 100)
@@ -31,7 +31,6 @@ class HandlePaymentReturnCommandHandler:
         order = await self.order_repository.find_order_by_id(order_id=order_id)
         if not order:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Đơn hàng không tồn tại")
-
 
         if not validate_vnpay_payment_return(
             secret_key=VNPAY_HASH_SECRET_KEY,
