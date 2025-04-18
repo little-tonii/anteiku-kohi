@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-
+from datetime import datetime
 from ....domain.entity.order_entity import PaymentStatus
 
 from ....infrastructure.utils.create_payment_url import create_payment_url
@@ -43,7 +43,7 @@ class GetOrderPaymentUrlQueryHandler:
             'vnp_OrderInfo': f'Anteiku Kohi - Mã hóa đơn {order.id}',
             'vnp_OrderType': 'Thanh toán hóa đơn',
             'vnp_Locale': 'vn',
-            'vnp_CreateDate': order.created_at.strftime('%Y%m%d%H%M%S'),
+            'vnp_CreateDate': datetime.now().strftime('%Y%m%d%H%M%S'),
             'vnp_IpAddr': query.client_ip_address,
             'vnp_ReturnUrl': VNPAY_RETURN_URL
         }
