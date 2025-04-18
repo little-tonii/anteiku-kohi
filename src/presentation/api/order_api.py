@@ -13,11 +13,10 @@ router = APIRouter(prefix="/order", tags=["Order"])
 
 @router.post("/create", status_code=status.HTTP_201_CREATED, response_model=CreateOrderResponse)
 async def create_order(
-    httpRequest: Request,
     request: CreateOrderRequest,
     order_service: Annotated[OrderService, Depends(get_order_service)]
 ):
-    return await order_service.create_order(meals_ids=request.meals, client_ip_address=httpRequest.client.host if httpRequest.client else "Unknown")
+    return await order_service.create_order(meals_ids=request.meals)
 
 @router.put("/take-responsibility", status_code=status.HTTP_200_OK, response_model=TakeResponsibilityForOrderResponse)
 async def take_responsibility_for_order(
@@ -38,9 +37,13 @@ async def update_order_status(
 @router.get("/payment-url/{order_id}", status_code=status.HTTP_200_OK, response_model=GetOrderPaymentUrlResponse)
 async def get_order_payment_url(
     order_id: int,
-    order_service: Annotated[OrderService, Depends(get_order_service)]
+    order_service: Annotated[OrderService, Depends(get_order_service)],
+    request: Request
 ):
-    return await order_service.get_order_payment_url(order_id=order_id)
+    return await order_service.get_order_payment_url(
+        order_id=order_id,
+        client_ip_address=request.client.host if request.client else "Unknown"
+    )
 
 @router.get("/payment-return", status_code=status.HTTP_200_OK, response_model=HandlePaymentReturnResponse)
 async def handle_payment_return(

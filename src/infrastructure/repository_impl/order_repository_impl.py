@@ -94,7 +94,6 @@ class OrderRepositoryImpl(OrderRepository):
                     order_status=existed_order_model.order_status, # type: ignore
                     payment_status=existed_order_model.payment_status, # type: ignore
                     staff_id=existed_order_model.staff_id, # type: ignore
-                    payment_url=existed_order_model.payment_url, # type: ignore
                 )
 
     async def update_order_staff_id(self, order_id: int, staff_id: int) -> bool:
@@ -147,30 +146,7 @@ class OrderRepositoryImpl(OrderRepository):
                 order_status=order_model.order_status, # type: ignore
                 payment_status=order_model.payment_status, # type: ignore
                 staff_id=order_model.staff_id, # type: ignore
-                payment_url=order_model.payment_url, # type: ignore
             )
-
-    async def update_order_payment_url(self, order_id: int, payment_url: str) -> None:
-        async with self.async_session as session:
-            async with session.begin():
-                stmt = (
-                    update(OrderModel)
-                    .where(OrderModel.id == order_id)
-                    .values(payment_url=payment_url)
-                    .returning(OrderModel)
-                )
-                await session.execute(stmt)
-
-    async def delete_order_payment_url(self, order_id: int) -> None:
-        async with self.async_session as session:
-            async with session.begin():
-                stmt = (
-                    update(OrderModel)
-                    .where(OrderModel.id == order_id)
-                    .values(payment_url=None)
-                    .returning(OrderModel)
-                )
-                await session.execute(stmt)
 
     async def update_order_payment_status(self, order_id: int, status: str) -> None:
         async with self.async_session as session:
