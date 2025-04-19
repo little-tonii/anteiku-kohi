@@ -28,9 +28,9 @@ class GetOrderByIdQueryHandler:
         order_meals = await self.order_repository.get_order_meal_list(order_id=query.order_id)
         meal_lookup: dict[int, MealEntity] = {}
         for meal in order_meals:
-            meal_result = await self.meal_repository.get_by_id(id=meal.id)
+            meal_result = await self.meal_repository.get_by_id(id=meal.meal_id)
             if meal_result:
-                meal_lookup[meal.id] = meal_result
+                meal_lookup[meal.meal_id] = meal_result
         return GetOrderByIdResponse(
             id=order.id,
             updated_at=order.updated_at,
@@ -47,5 +47,6 @@ class GetOrderByIdQueryHandler:
                     image_url=meal_lookup[order_meal.meal_id].image_url,
                 )
                 for order_meal in order_meals
-            ]
+            ],
+            staff_id=order.staff_id
         )

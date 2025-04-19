@@ -2,13 +2,14 @@ from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from starlette import status
 
+from ...infrastructure.utils.validator import validate_is_order_responsible, validate_page, validate_size
 from ...application.socket_manager.order_manager import order_manager
 from ...infrastructure.config.security import verify_access_token
 from ...infrastructure.utils.token_util import TokenClaims
 from ...application.service.order_service import OrderService
 from ...infrastructure.config.dependencies import get_order_service
 from ...application.schema.request.order_request_schema import CreateOrderRequest, UpdateOrderStatusRequest
-from ...application.schema.response.order_response_schema import CreateOrderResponse, GetOrderByIdResponse, GetOrderPaymentUrlResponse, HandlePaymentReturnResponse, TakeResponsibilityForOrderResponse, UpdateOrderStatusResponse
+from ...application.schema.response.order_response_schema import CreateOrderResponse, GetOrderByIdResponse, GetOrderPaginationResponse, GetOrderPaymentUrlResponse, HandlePaymentReturnResponse, TakeResponsibilityForOrderResponse, UpdateOrderStatusResponse
 
 router = APIRouter(prefix="/order", tags=["Order"])
 
@@ -59,3 +60,12 @@ async def handle_payment_return(
 @router.get("/{order_id}", status_code=status.HTTP_200_OK, response_model=GetOrderByIdResponse)
 async def get_order_by_id(order_id: int, order_service: Annotated[OrderService, Depends(get_order_service)]):
     return await order_service.get_order_by_id(order_id=order_id)
+
+@router.get("/", status_code=status.HTTP_200_OK, response_model=GetOrderPaginationResponse)
+async def get_order_pagination(
+    page: Annotated[int, Depends(validate_page)],
+    size: Annotated[int, Depends(validate_size)],
+    is_order_responsible: Annotated[bool, Depends(validate_is_order_responsible)],
+    order_service: Annotated[OrderService, Depends(get_order_service)]
+):
+    return await order_service.get_order_pagination(page=page, size=size, is_order_responsible=is_order_responsible)
