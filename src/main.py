@@ -7,18 +7,13 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 from fastapi import Request
 
+from .presentation.websocket import order_websocket
 from .presentation.api import order_api
-
 from .infrastructure.config.variables import UPLOAD_FOLDER
-
 from .presentation.api import meal_api
-
 from .presentation.api import manager_api
-
 from .presentation.api import user_api
-
 from .infrastructure.config.database import init_db
-
 from .infrastructure.config.exception_handler import process_http_exception, process_validation_error, process_global_exception
 
 @asynccontextmanager
@@ -48,6 +43,8 @@ app.include_router(user_api.router)
 app.include_router(manager_api.router)
 app.include_router(meal_api.router)
 app.include_router(order_api.router)
+
+app.include_router(order_websocket.router)
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):

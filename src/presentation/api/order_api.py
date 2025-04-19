@@ -1,7 +1,8 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from starlette import status
 
+from ...application.socket_manager.order_manager import order_manager
 from ...infrastructure.config.security import verify_access_token
 from ...infrastructure.utils.token_util import TokenClaims
 from ...application.service.order_service import OrderService
@@ -30,9 +31,12 @@ async def take_responsibility_for_order(
 async def update_order_status(
     claims: Annotated[TokenClaims, Depends(verify_access_token)],
     request: UpdateOrderStatusRequest,
-    order_service: Annotated[OrderService, Depends(get_order_service)]
+    order_service: Annotated[OrderService, Depends(get_order_service)],
+    background_tasks: BackgroundTasks
 ):
-    return await order_service.update_order_status(order_id=request.order_id, staff_id=claims.id, status=request.status)
+    response = await order_service.update_order_status(order_id=request.order_id, staff_id=claims.id, status=request.status)
+    background_tasks.add_task(order_manager.broadcast, response.id, response.order_status)
+    return response
 
 @router.get("/payment-url/{order_id}", status_code=status.HTTP_200_OK, response_model=GetOrderPaymentUrlResponse)
 async def get_order_payment_url(
