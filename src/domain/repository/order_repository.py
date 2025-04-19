@@ -32,3 +32,7 @@ class OrderRepository(ABC):
     @abstractmethod
     async def update_order_payment_status(self, order_id: int, status: str) -> None:
         pass
+
+    @abstractmethod
+    async def find_orders(self, page: int, size: int, is_order_responsible: bool | None) -> List[OrderEntity]:
+        pass

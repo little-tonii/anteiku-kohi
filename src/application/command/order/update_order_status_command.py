@@ -55,5 +55,6 @@ class UpdateOrderStatusCommandHandler:
                     image_url=meal_lookup[order_meal.meal_id].image_url,
                 )
                 for order_meal in order_meal_list
-            ]
+            ],
+            staff_id=updated_order.staff_id,
         )

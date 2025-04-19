@@ -17,7 +17,7 @@ async def validate_email(email: str) -> str:
         return email_infor.normalized
     except email_validator.EmailNotValidError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Email {email} không hợp lệ")
-    
+
 
 async def validate_meal_name(name: str = Form(...)) -> str:
     if not name.strip():
@@ -48,12 +48,20 @@ async def validate_picture(picture: UploadFile = File(...)) -> UploadFile:
     return picture
 
 async def validate_is_available_meal(is_available: bool | None = Query(None)) -> bool | None:
-    if is_available not in [True, False, None]:  
+    if is_available not in [True, False, None]:
         raise HTTPException(
             status_code=400,
             detail="Tham số có sẵn phải là true hoặc false (tham số không bắt buộc)"
         )
     return is_available
+
+async def validate_is_order_responsible(is_order_responsible: bool | None = Query(None)) -> bool | None:
+    if is_order_responsible not in [True, False, None]:
+        raise HTTPException(
+            status_code=400,
+            detail="Tham số có trách nhiệm phải là true hoặc false (tham số không bắt buộc)"
+        )
+    return is_order_responsible
 
 async def validate_page(page: int = Query(...)) -> int:
     if page < 1:

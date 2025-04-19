@@ -158,3 +158,36 @@ class OrderRepositoryImpl(OrderRepository):
                     .returning(OrderModel)
                 )
                 await session.execute(stmt)
+
+    async def find_orders(self, page: int, size: int, is_order_responsible: bool | None) -> List[OrderEntity]:
+        async with self.async_session as session:
+            stmt = (
+                select(OrderModel)
+                .order_by(OrderModel.created_at.desc())
+            )
+            if is_order_responsible is True:
+                stmt = stmt.where(OrderModel.staff_id == None)
+            elif is_order_responsible is False:
+                stmt = stmt.where(OrderModel.staff_id != None)
+            stmt = stmt.offset((page - 1) * size).limit(size)
+            result = await session.execute(stmt)
+            order_models = result.scalars().all()
+            orders = []
+            for order_model in order_models:
+                order_meals = await session.execute(
+                    select(OrderMealModel)
+                    .where(OrderMealModel.order_id == order_model.id)
+                )
+                meal_ids = [meal.meal_id for meal in order_meals.scalars()]
+                orders.append(
+                    OrderEntity(
+                        id=order_model.id, # type: ignore
+                        meals=meal_ids, # type: ignore
+                        updated_at=order_model.updated_at, # type: ignore
+                        created_at=order_model.created_at, # type: ignore
+                        order_status=order_model.order_status, # type: ignore
+                        payment_status=order_model.payment_status, # type: ignore
+                        staff_id=order_model.staff_id, # type: ignore
+                    )
+                )
+            return orders
