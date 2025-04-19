@@ -1,4 +1,6 @@
 from fastapi import HTTPException
+from datetime import datetime
+from ....domain.entity.order_entity import PaymentStatus
 
 from ....infrastructure.utils.create_payment_url import create_payment_url
 
@@ -26,6 +28,10 @@ class GetOrderPaymentUrlQueryHandler:
         order = await self.order_repository.find_order_by_id(order_id=query.order_id)
         if not order:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Đơn hàng không tồn tại")
+        if order.payment_status == PaymentStatus.PAID:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Đơn hàng đã được thanh toán")
+        if order.payment_status == PaymentStatus.REFUNDED:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Đơn hàng đã được hoàn tiền")
         order_meals = await self.order_repository.get_order_meal_list(order_id=query.order_id)
         payment_url_params = {
             'vnp_Version': '2.1.0',
@@ -33,11 +39,11 @@ class GetOrderPaymentUrlQueryHandler:
             'vnp_TmnCode': VNPAY_TMN_CODE,
             'vnp_Amount': sum(order_meal.price * order_meal.quantity for order_meal in order_meals) * 100,
             'vnp_CurrCode': 'VND',
-            'vnp_TxnRef': f'{order.id}',
+            'vnp_TxnRef': f'{order.created_at.strftime("%Y%m%d%H%M%S")}-{order.id}',
             'vnp_OrderInfo': f'Anteiku Kohi - Mã hóa đơn {order.id}',
             'vnp_OrderType': 'Thanh toán hóa đơn',
             'vnp_Locale': 'vn',
-            'vnp_CreateDate': order.created_at.strftime('%Y%m%d%H%M%S'),
+            'vnp_CreateDate': datetime.now().strftime('%Y%m%d%H%M%S'),
             'vnp_IpAddr': query.client_ip_address,
             'vnp_ReturnUrl': VNPAY_RETURN_URL
         }
