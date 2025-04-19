@@ -37,3 +37,11 @@ class HandlePaymentReturnResponse(BaseModel):
     message: str
     bank_code: str
     amount: int
+
+class GetOrderByIdResponse(BaseModel):
+    id: int
+    meals: List[OrderMealResponse]
+    order_status: str
+    payment_status: str
+    created_at: datetime
+    updated_at: datetime

@@ -7,7 +7,7 @@ from ...infrastructure.utils.token_util import TokenClaims
 from ...application.service.order_service import OrderService
 from ...infrastructure.config.dependencies import get_order_service
 from ...application.schema.request.order_request_schema import CreateOrderRequest, UpdateOrderStatusRequest
-from ...application.schema.response.order_response_schema import CreateOrderResponse, GetOrderPaymentUrlResponse, HandlePaymentReturnResponse, TakeResponsibilityForOrderResponse, UpdateOrderStatusResponse
+from ...application.schema.response.order_response_schema import CreateOrderResponse, GetOrderByIdResponse, GetOrderPaymentUrlResponse, HandlePaymentReturnResponse, TakeResponsibilityForOrderResponse, UpdateOrderStatusResponse
 
 router = APIRouter(prefix="/order", tags=["Order"])
 
@@ -51,3 +51,7 @@ async def handle_payment_return(
     request: Request
 ):
     return await order_service.handle_payment_return(query_params=dict(request.query_params))
+
+@router.get("/{order_id}", status_code=status.HTTP_200_OK, response_model=GetOrderByIdResponse)
+async def get_order_by_id(order_id: int, order_service: Annotated[OrderService, Depends(get_order_service)]):
+    return await order_service.get_order_by_id(order_id=order_id)

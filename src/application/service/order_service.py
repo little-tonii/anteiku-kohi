@@ -1,19 +1,14 @@
 from typing import List
 
-from ...application.command.order.handle_payment_return_command import HandlePaymentReturnCommand
-
+from ...application.query.order.get_order_by_id_query import GetOrderByIdQuery, GetOrderByIdQueryHandler
+from ...application.command.order.handle_payment_return_command import HandlePaymentReturnCommand, HandlePaymentReturnCommandHandler
 from ...application.query.order.get_order_payment_url_query import GetOrderPaymentUrlQuery, GetOrderPaymentUrlQueryHandler
-
 from ...application.command.order.update_order_status_command import UpdateOrderStatusCommand, UpdateOrderStatusCommandHandler
-
 from ...application.command.order.take_responsibility_for_order_command import TakeResponsibilityForOrderCommand, TakeResponsibilityForOrderCommandHandler
-
 from ...domain.repository.meal_repository import MealRepository
-
-from ...application.schema.response.order_response_schema import CreateOrderResponse, GetOrderPaymentUrlResponse, HandlePaymentReturnResponse, TakeResponsibilityForOrderResponse, UpdateOrderStatusResponse
+from ...application.schema.response.order_response_schema import CreateOrderResponse, GetOrderByIdResponse, GetOrderPaymentUrlResponse, HandlePaymentReturnResponse, TakeResponsibilityForOrderResponse, UpdateOrderStatusResponse
 from ...domain.repository.order_repository import OrderRepository
 from ...application.command.order.create_order_command import CreateOrderCommand, CreateOrderCommandHandler
-from ...application.command.order.handle_payment_return_command import HandlePaymentReturnCommandHandler
 
 
 class OrderService:
@@ -58,3 +53,11 @@ class OrderService:
         command = HandlePaymentReturnCommand(query_params=query_params)
         command_handler = HandlePaymentReturnCommandHandler(order_repository=self.order_repository)
         return await command_handler.handle(command=command)
+
+    async def get_order_by_id(self, order_id: int) -> GetOrderByIdResponse:
+        query = GetOrderByIdQuery(order_id=order_id)
+        query_handler = GetOrderByIdQueryHandler(
+            meal_repository=self.meal_repository,
+            order_repository=self.order_repository,
+        )
+        return await query_handler.handle(query=query)
