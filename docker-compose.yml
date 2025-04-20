@@ -30,6 +30,15 @@ services:
       timeout: 5s
       retries: 5
 
+  anteiku_kohi_redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: anteiku_kohi_redisinsight
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight_data:/db
+
   anteiku_kohi:
     build: .
     container_name: anteiku_kohi
@@ -44,10 +53,13 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - ./src:/app/src
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
       - meal_images:/public/images
 
 volumes:
   postgres_data:
   meal_images:
   redis_data:
+  redisinsight_data:
