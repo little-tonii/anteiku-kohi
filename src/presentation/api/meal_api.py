@@ -5,7 +5,7 @@ from starlette import status
 from fastapi_cache.decorator import cache
 from fastapi_cache import FastAPICache
 
-from ...infrastructure.config.caching import RedisNamespace
+from ...infrastructure.config.caching import REDIS_PREFIX, RedisNamespace
 from ...application.schema.request.meal_request_schema import UpdateMealDataRequest
 from ...infrastructure.utils.validator import validate_is_available_meal, validate_meal_description, validate_meal_name, validate_meal_price, validate_page, validate_picture, validate_size
 from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse, GetMealResponse, GetMealsResponse, UpdateMealDataResponse, UpdateMealImageResponse
@@ -25,7 +25,7 @@ async def enable_meal(
 ):
     response = await meal_service.enable_meal(id=id)
     background_tasks.add_task(FastAPICache.clear, namespace=RedisNamespace.MEAL_LIST)
-    background_tasks.add_task(FastAPICache.clear, namespace=f"{RedisNamespace.MEAL}:{id}")
+    background_tasks.add_task(FastAPICache.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response
 
 @router.patch(path="/disable/{id}", status_code=status.HTTP_200_OK, response_model=DisableMealResponse)
@@ -37,7 +37,7 @@ async def disable_meal(
 ):
     response = await meal_service.disable_meal(id=id)
     background_tasks.add_task(FastAPICache.clear, namespace=RedisNamespace.MEAL_LIST)
-    background_tasks.add_task(FastAPICache.clear, namespace=f"{RedisNamespace.MEAL}:{id}")
+    background_tasks.add_task(FastAPICache.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response
 
 @router.post(path="/", status_code=status.HTTP_201_CREATED, response_model=CreateMealResponse)
@@ -84,7 +84,7 @@ async def get_meal_by_id(meal_service: Annotated[MealService, Depends(get_meal_s
             namespace,
             str(kwargs.get('page')),
             str(kwargs.get('size')),
-            'all' if kwargs.get('is_available') is None else str(kwargs.get('is_available'))
+            'All' if kwargs.get('is_available') is None else str(kwargs.get('is_available'))
         ])
     )
 )
@@ -111,7 +111,7 @@ async def update_meal_data(
         price=request.price
     )
     background_tasks.add_task(FastAPICache.clear, namespace=RedisNamespace.MEAL_LIST)
-    background_tasks.add_task(FastAPICache.clear, namespace=f"{RedisNamespace.MEAL}:{id}")
+    background_tasks.add_task(FastAPICache.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response
 
 @router.put(path="/update-image/{id}", status_code=status.HTTP_200_OK, response_model=UpdateMealImageResponse)
@@ -124,5 +124,5 @@ async def update_meal_image(
 ):
     response = await meal_service.update_meal_image(id=id, picture=picture)
     background_tasks.add_task(FastAPICache.clear, namespace=RedisNamespace.MEAL_LIST)
-    background_tasks.add_task(FastAPICache.clear, namespace=f"{RedisNamespace.MEAL}:{id}")
+    background_tasks.add_task(FastAPICache.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response

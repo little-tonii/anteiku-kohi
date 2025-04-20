@@ -17,12 +17,12 @@ from .presentation.api import manager_api
 from .presentation.api import user_api
 from .infrastructure.config.database import init_db
 from .infrastructure.config.exception_handler import process_http_exception, process_validation_error, process_global_exception
-from .infrastructure.config.caching import redis
+from .infrastructure.config.caching import REDIS_PREFIX, redis
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
-    FastAPICache.init(RedisBackend(redis), prefix="anteiku-kohi-cache")
+    FastAPICache.init(RedisBackend(redis), prefix=REDIS_PREFIX)
     yield
     await redis.close()
 

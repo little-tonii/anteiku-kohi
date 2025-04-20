@@ -8,6 +8,8 @@ redis = aioredis.from_url(
     decode_responses=False,
 )
 
+REDIS_PREFIX = 'anteiku-kohi-cache'
+
 class RedisNamespace:
     MEAL_LIST = "meal_list"
     MEAL = "meal"
