@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import ValidationError
 from fastapi import Request
+from fastapi_cache import FastAPICache
+from fastapi_cache.backends.redis import RedisBackend
 
 from .presentation.websocket import order_websocket
 from .presentation.api import order_api
@@ -15,11 +17,14 @@ from .presentation.api import manager_api
 from .presentation.api import user_api
 from .infrastructure.config.database import init_db
 from .infrastructure.config.exception_handler import process_http_exception, process_validation_error, process_global_exception
+from .infrastructure.config.caching import redis
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    FastAPICache.init(RedisBackend(redis), prefix="anteiku-kohi-cache")
     yield
+    await redis.close()
 
 app = FastAPI(title="Anteiku Kohi", lifespan=lifespan)
 

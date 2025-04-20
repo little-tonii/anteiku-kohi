@@ -15,12 +15,29 @@ services:
       retries: 5
       start_period: 30s
 
+  anteiku_kohi_redis:
+    image: redis:latest
+    container_name: anteiku_kohi_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   anteiku_kohi:
     build: .
     container_name: anteiku_kohi
     restart: unless-stopped
     depends_on:
       anteiku_kohi_database:
+        condition: service_healthy
+      anteiku_kohi_redis:
         condition: service_healthy
     env_file:
       - .env.app
@@ -33,3 +50,4 @@ services:
 volumes:
   postgres_data:
   meal_images:
+  redis_data:
