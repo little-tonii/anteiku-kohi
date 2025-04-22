@@ -16,6 +16,8 @@ class RedisNamespace:
     MEAL_LIST = "meal_list"
     MEAL = "meal"
     USER = "user"
+    PAYMENT_URL = "payment_url"
+
 
 class FastAPICacheExtended(FastAPICache):
     @classmethod

@@ -1,7 +1,10 @@
 from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from starlette import status
+from fastapi_cache.decorator import cache
+from fastapi_cache import JsonCoder
 
+from ...infrastructure.config.caching import REDIS_PREFIX, FastAPICacheExtended, RedisNamespace
 from ...infrastructure.utils.validator import validate_is_order_responsible, validate_page, validate_size
 from ...application.socket_manager.order_manager import order_manager
 from ...infrastructure.config.security import verify_access_token
@@ -40,6 +43,17 @@ async def update_order_status(
     return response
 
 @router.get("/payment-url/{order_id}", status_code=status.HTTP_200_OK, response_model=GetOrderPaymentUrlResponse)
+@cache(
+    expire=60 * 10,
+    namespace=RedisNamespace.PAYMENT_URL,
+    coder=JsonCoder,
+    key_builder=lambda func, namespace="", *, request=None, response=None, args=(), kwargs={}: (
+        ":".join([
+            namespace,
+            str(kwargs.get("order_id"))
+        ])
+    )
+)
 async def get_order_payment_url(
     order_id: int,
     order_service: Annotated[OrderService, Depends(get_order_service)],
@@ -53,9 +67,15 @@ async def get_order_payment_url(
 @router.get("/payment-return", status_code=status.HTTP_200_OK, response_model=HandlePaymentReturnResponse)
 async def handle_payment_return(
     order_service: Annotated[OrderService, Depends(get_order_service)],
-    request: Request
+    request: Request,
+    background_tasks: BackgroundTasks,
 ):
-    return await order_service.handle_payment_return(query_params=dict(request.query_params))
+    response = await order_service.handle_payment_return(query_params=dict(request.query_params))
+    background_tasks.add_task(
+        FastAPICacheExtended.clear,
+        key=":".join([REDIS_PREFIX, RedisNamespace.PAYMENT_URL, str(response.order_id)])
+    )
+    return response
 
 @router.get("/{order_id}", status_code=status.HTTP_200_OK, response_model=GetOrderByIdResponse)
 async def get_order_by_id(order_id: int, order_service: Annotated[OrderService, Depends(get_order_service)]):
