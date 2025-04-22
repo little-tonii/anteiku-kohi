@@ -36,3 +36,15 @@ class GetAccessTokenResponse(BaseModel):
 
 class VerifyAccountResponse(BaseModel):
     message: str
+
+class GetUserByEmailResponse(BaseModel):
+    id: int
+    full_name: str
+    phone_number: str
+    email: str
+    address: str
+    updated_at: datetime
+    joined_at: datetime
+    is_active: bool
+    role: str
+    is_verified: bool

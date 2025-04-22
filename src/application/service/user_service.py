@@ -1,3 +1,4 @@
+from ...application.query.user.get_user_by_email_query import GetUserByEmailQuery, GetUserByEmailQueryHandler
 from ...application.query.user.get_user_info_query import GetUserInfoQuery, GetUserInfoQueryHandler
 from ...application.query.user.create_access_token_query import CreateAccessTokenQuery, CreateAccessTokenQueryHandler
 from ...application.command.user.logout_user_command import LogoutUserCommand, LogoutUserCommandHandler
@@ -5,7 +6,7 @@ from ...domain.repository.user_repository import UserRepository
 from ...application.command.user.register_user_command import RegisterUserCommand, RegisterUserCommandHandler
 from ...application.command.user.verify_account_command import VerifyAccountCommand, VerifyAccountCommandHandler
 from ...application.command.user.login_user_command import LoginUserCommand, LoginUserCommandHandler
-from ...application.schema.response.user_response_schema import VerifyAccountResponse, GetAccessTokenResponse, GetUserInfoResponse, LoginUserResponse, RegisterUserResponse
+from ...application.schema.response.user_response_schema import GetUserByEmailResponse, VerifyAccountResponse, GetAccessTokenResponse, GetUserInfoResponse, LoginUserResponse, RegisterUserResponse
 
 class UserService:
 
@@ -49,3 +50,8 @@ class UserService:
         command = VerifyAccountCommand(token=token)
         command_handler = VerifyAccountCommandHandler(user_repository=self.user_repository)
         return await command_handler.handle(command=command)
+
+    async def get_user_by_email(self, email: str) -> GetUserByEmailResponse:
+        query = GetUserByEmailQuery(email=email)
+        query_handler = GetUserByEmailQueryHandler(user_repository=self.user_repository)
+        return await query_handler.handle(query=query)

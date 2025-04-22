@@ -3,9 +3,8 @@ from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile
 from fastapi_cache.coder import JsonCoder
 from starlette import status
 from fastapi_cache.decorator import cache
-from fastapi_cache import FastAPICache
 
-from ...infrastructure.config.caching import REDIS_PREFIX, RedisNamespace
+from ...infrastructure.config.caching import REDIS_PREFIX, FastAPICacheExtended, RedisNamespace
 from ...application.schema.request.meal_request_schema import UpdateMealDataRequest
 from ...infrastructure.utils.validator import validate_is_available_meal, validate_meal_description, validate_meal_name, validate_meal_price, validate_page, validate_picture, validate_size
 from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse, GetMealResponse, GetMealsResponse, UpdateMealDataResponse, UpdateMealImageResponse
@@ -24,8 +23,8 @@ async def enable_meal(
     background_tasks: BackgroundTasks,
 ):
     response = await meal_service.enable_meal(id=id)
-    background_tasks.add_task(FastAPICache.clear, namespace=RedisNamespace.MEAL_LIST)
-    background_tasks.add_task(FastAPICache.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
+    background_tasks.add_task(FastAPICacheExtended.clear, namespace=RedisNamespace.MEAL_LIST)
+    background_tasks.add_task(FastAPICacheExtended.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response
 
 @router.patch(path="/disable/{id}", status_code=status.HTTP_200_OK, response_model=DisableMealResponse)
@@ -36,8 +35,8 @@ async def disable_meal(
     background_tasks: BackgroundTasks,
 ):
     response = await meal_service.disable_meal(id=id)
-    background_tasks.add_task(FastAPICache.clear, namespace=RedisNamespace.MEAL_LIST)
-    background_tasks.add_task(FastAPICache.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
+    background_tasks.add_task(FastAPICacheExtended.clear, namespace=RedisNamespace.MEAL_LIST)
+    background_tasks.add_task(FastAPICacheExtended.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response
 
 @router.post(path="/", status_code=status.HTTP_201_CREATED, response_model=CreateMealResponse)
@@ -56,7 +55,7 @@ async def create_meal(
         price=price,
         picture=picture
     )
-    background_tasks.add_task(FastAPICache.clear, namespace=RedisNamespace.MEAL_LIST)
+    background_tasks.add_task(FastAPICacheExtended.clear, namespace=RedisNamespace.MEAL_LIST)
     return response
 
 @router.get(path="/{id}", status_code=status.HTTP_200_OK, response_model=GetMealResponse)
@@ -110,8 +109,8 @@ async def update_meal_data(
         description=request.description,
         price=request.price
     )
-    background_tasks.add_task(FastAPICache.clear, namespace=RedisNamespace.MEAL_LIST)
-    background_tasks.add_task(FastAPICache.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
+    background_tasks.add_task(FastAPICacheExtended.clear, namespace=RedisNamespace.MEAL_LIST)
+    background_tasks.add_task(FastAPICacheExtended.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response
 
 @router.put(path="/update-image/{id}", status_code=status.HTTP_200_OK, response_model=UpdateMealImageResponse)
@@ -123,6 +122,6 @@ async def update_meal_image(
     picture: UploadFile = Depends(validate_picture)
 ):
     response = await meal_service.update_meal_image(id=id, picture=picture)
-    background_tasks.add_task(FastAPICache.clear, namespace=RedisNamespace.MEAL_LIST)
-    background_tasks.add_task(FastAPICache.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
+    background_tasks.add_task(FastAPICacheExtended.clear, namespace=RedisNamespace.MEAL_LIST)
+    background_tasks.add_task(FastAPICacheExtended.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response

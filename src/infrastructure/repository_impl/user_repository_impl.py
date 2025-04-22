@@ -58,7 +58,7 @@ class UserRepositoryImpl(UserRepository):
 
     async def get_by_id(self, id: int) -> Optional[UserEntity]:
         async with self.async_session as session:
-            query = select(UserModel).where(UserModel.id == id, UserModel.is_active == True)
+            query = select(UserModel).where(UserModel.id == id)
             query_result = await session.execute(query)
             user_model = query_result.scalar_one_or_none()
             if not user_model:
@@ -80,7 +80,7 @@ class UserRepositoryImpl(UserRepository):
 
     async def get_by_email(self, email: str) -> Optional[UserEntity]:
         async with self.async_session as session:
-            query = select(UserModel).where(UserModel.email == email, UserModel.is_active == True)
+            query = select(UserModel).where(UserModel.email == email)
             query_result = await session.execute(query)
             user_model = query_result.scalar_one_or_none()
             if not user_model:

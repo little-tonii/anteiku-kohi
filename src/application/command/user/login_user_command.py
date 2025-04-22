@@ -23,9 +23,11 @@ class LoginUserCommandHandler:
     async def handle(self, command: LoginUserCommand) -> LoginUserResponse:
         user_entity = await self.user_repository.get_by_email(email=command.email)
         if not user_entity:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email hoặc mật khẩu không chính xác")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email chưa đăng ký tài khoản")
         if not bcrypt_context.verify(command.password, user_entity.hashed_password):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Email hoặc mật khẩu không chính xác")
+        if user_entity.is_active == False:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Tài khoản đã bị vô hiệu hóa")
         if user_entity.is_verified == False:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vui lòng truy cập vào email để xác minh tài khoản")
         refresh_token = create_refresh_token(user_id=user_entity.id, role=user_entity.role)
