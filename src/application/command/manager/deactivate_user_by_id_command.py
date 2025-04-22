@@ -25,7 +25,7 @@ class DeactivateUserByIdCommandHandler:
         if command.role != UserRole.MANAGER:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Không có quyền truy cập")
         if command.current_manager_id == command.user_id:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Không thể tự vô hiệu hóa chính mình")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Không thể vô hiệu hóa chính mình")
         success = await self.user_repository.deactivate_by_id(id=command.user_id)
         if not success:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Người dùng không tồn tại hoặc đã bị vô hiệu hoá")

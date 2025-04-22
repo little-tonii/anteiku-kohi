@@ -21,8 +21,8 @@ class ManagerService:
         command_handler = DeactivateUserByIdCommandHandler(user_repository=self.user_repository)
         return await command_handler.handle(command=command)
 
-    async def deactivate_user_by_email(self, role: str, email: str) -> DeactivateUserResponse:
-        command = DeactivateUserByEmailCommand(role=role, email=email)
+    async def deactivate_user_by_email(self, role: str, email: str, manager_id: int) -> DeactivateUserResponse:
+        command = DeactivateUserByEmailCommand(role=role, email=email, current_manager_id=manager_id)
         command_handler = DeactivateUserByEmailCommandHandler(user_repository=self.user_repository)
         return await command_handler.handle(command=command)
 
