@@ -19,6 +19,8 @@ class GetUserInfoQueryHandler:
         user_entity = await self.user_repository.get_by_id(id=query.id)
         if not user_entity:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Người dùng không tồn tại")
+        if user_entity.is_active == False:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Tài khoản đã bị vô hiệu hóa")
         return GetUserInfoResponse(
             id=user_entity.id,
             full_name=user_entity.full_name,

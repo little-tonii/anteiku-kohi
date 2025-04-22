@@ -1,16 +1,15 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_cache import JsonCoder
 from starlette import status
+from fastapi_cache.decorator import cache
 
+from ...infrastructure.config.caching import RedisNamespace
 from ...infrastructure.config.security import verify_access_token
-
 from ...infrastructure.utils.token_util import TokenClaims
-
 from ...infrastructure.config.dependencies import get_user_service
-
 from ...application.schema.request.user_request_schema import GetAccessTokenRequest, LogoutUserRequest, RegisterUserRequest
-
 from ...application.schema.response.user_response_schema import GetAccessTokenResponse, GetUserInfoResponse, LoginUserResponse, RegisterUserResponse
 from ...application.service.user_service import UserService
 from ...application.background_task.send_email_verification import send_email_verification
@@ -46,6 +45,17 @@ async def get_access_token(user_service: Annotated[UserService, Depends(get_user
     return await user_service.create_access_token(refresh_token=request.refresh_token)
 
 @router.get(path="/info", status_code=status.HTTP_200_OK, response_model=GetUserInfoResponse)
+@cache(
+    namespace=RedisNamespace.USER,
+    expire=60 * 60 * 24 * 7,
+    coder=JsonCoder,
+    key_builder=lambda func, namespace="", *, request=None, response=None, args=(), kwargs={}: (
+        ":".join([
+            namespace,
+            str(kwargs['claims'].id),
+        ])
+    )
+)
 async def get_info(
     claims: Annotated[TokenClaims, Depends(verify_access_token)],
     user_service: Annotated[UserService, Depends(get_user_service)]
