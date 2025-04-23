@@ -2,7 +2,6 @@ from fastapi import HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
-from slowapi.errors import RateLimitExceeded
 from starlette import status
 
 from ...application.schema.response.error_response_schema import ErrorResponse, ErrorsResponse
@@ -41,10 +40,4 @@ def process_global_exception(exc: Exception):
     return JSONResponse(
         status_code=500,
         content=ErrorResponse(message="Có lỗi xảy ra").model_dump()
-    )
-
-def process_rate_limit_exceeded(exec: RateLimitExceeded):
-    return JSONResponse(
-        status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-        content=ErrorResponse(message="Bạn đã đạt giới hạn lưu lượng truy cập").model_dump()
     )

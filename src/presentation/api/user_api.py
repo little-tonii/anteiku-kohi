@@ -4,8 +4,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_cache import JsonCoder
 from starlette import status
 from fastapi_cache.decorator import cache
+from fastapi_limiter.depends import RateLimiter
 
-from ...infrastructure.config.rate_limiting import limiter
 from ...infrastructure.config.caching import RedisNamespace
 from ...infrastructure.config.security import verify_access_token
 from ...infrastructure.utils.token_util import TokenClaims
@@ -21,8 +21,12 @@ router = APIRouter(prefix="/user", tags=["User"])
 async def logout(claims: Annotated[TokenClaims, Depends(verify_access_token)], user_service: Annotated[UserService, Depends(get_user_service)], request: LogoutUserRequest):
     await user_service.logout_user(refresh_token=request.refresh_token)
 
-@router.post(path="/login", status_code=status.HTTP_200_OK, response_model=LoginUserResponse)
-@limiter.limit(limit_value="5/minute")
+@router.post(
+    path="/login",
+    status_code=status.HTTP_200_OK,
+    response_model=LoginUserResponse,
+    dependencies=[Depends(RateLimiter(times=5, seconds=60))]
+)
 async def login(
     request: Request,
     user_service: Annotated[UserService, Depends(get_user_service)],
