@@ -1,9 +1,11 @@
 from typing import Annotated
 from fastapi import APIRouter, BackgroundTasks, Depends, UploadFile
 from fastapi_cache.coder import JsonCoder
+from fastapi_limiter.depends import RateLimiter
 from starlette import status
 from fastapi_cache.decorator import cache
 
+from ...infrastructure.config.rate_limiting import identifier_based_on_claims
 from ...infrastructure.config.caching import REDIS_PREFIX, FastAPICacheExtended, RedisNamespace
 from ...application.schema.request.meal_request_schema import UpdateMealDataRequest
 from ...infrastructure.utils.validator import validate_is_available_meal, validate_meal_description, validate_meal_name, validate_meal_price, validate_page, validate_picture, validate_size
@@ -15,7 +17,15 @@ from ...infrastructure.utils.token_util import TokenClaims
 
 router = APIRouter(prefix="/meal", tags=["Meal"])
 
-@router.patch(path="/enable/{id}", status_code=status.HTTP_200_OK, response_model=EnableMealResponse)
+@router.patch(
+    path="/enable/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=EnableMealResponse,
+    dependencies=[
+        Depends(verify_access_token),
+        Depends(RateLimiter(times=3, seconds=60, identifier=identifier_based_on_claims))
+    ]
+)
 async def enable_meal(
     claims: Annotated[TokenClaims, Depends(verify_access_token)],
     meal_service: Annotated[MealService, Depends(get_meal_service)],
@@ -27,7 +37,15 @@ async def enable_meal(
     background_tasks.add_task(FastAPICacheExtended.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response
 
-@router.patch(path="/disable/{id}", status_code=status.HTTP_200_OK, response_model=DisableMealResponse)
+@router.patch(
+    path="/disable/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=DisableMealResponse,
+    dependencies=[
+        Depends(verify_access_token),
+        Depends(RateLimiter(times=3, seconds=60, identifier=identifier_based_on_claims))
+    ]
+)
 async def disable_meal(
     claims: Annotated[TokenClaims, Depends(verify_access_token)],
     meal_service: Annotated[MealService, Depends(get_meal_service)],
@@ -39,7 +57,15 @@ async def disable_meal(
     background_tasks.add_task(FastAPICacheExtended.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response
 
-@router.post(path="/", status_code=status.HTTP_201_CREATED, response_model=CreateMealResponse)
+@router.post(
+    path="/",
+    status_code=status.HTTP_201_CREATED,
+    response_model=CreateMealResponse,
+    dependencies=[
+        Depends(verify_access_token),
+        Depends(RateLimiter(times=3, seconds=60, identifier=identifier_based_on_claims))
+    ]
+)
 async def create_meal(
     claims: Annotated[TokenClaims, Depends(verify_access_token)],
     meal_service: Annotated[MealService, Depends(get_meal_service)],
@@ -58,7 +84,12 @@ async def create_meal(
     background_tasks.add_task(FastAPICacheExtended.clear, namespace=RedisNamespace.MEAL_LIST)
     return response
 
-@router.get(path="/{id}", status_code=status.HTTP_200_OK, response_model=GetMealResponse)
+@router.get(
+    path="/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=GetMealResponse,
+    dependencies=[Depends(RateLimiter(times=20, seconds=60))]
+)
 @cache(
     expire=60 * 60 * 24,
     namespace=RedisNamespace.MEAL,
@@ -73,7 +104,12 @@ async def create_meal(
 async def get_meal_by_id(meal_service: Annotated[MealService, Depends(get_meal_service)], id: int):
     return await meal_service.get_meal_by_id(id=id)
 
-@router.get(path="/", status_code=status.HTTP_200_OK, response_model=GetMealsResponse)
+@router.get(
+    path="/",
+    status_code=status.HTTP_200_OK,
+    response_model=GetMealsResponse,
+    dependencies=[Depends(RateLimiter(times=20, seconds=60))]
+)
 @cache(
     expire=60 * 60 * 24,
     namespace=RedisNamespace.MEAL_LIST,
@@ -95,7 +131,15 @@ async def get_meals(
 ):
     return await meal_service.get_meals(page=page, size=size, is_available=is_available)
 
-@router.patch(path="/update-data/{id}", status_code=status.HTTP_200_OK, response_model=UpdateMealDataResponse)
+@router.patch(
+    path="/update-data/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=UpdateMealDataResponse,
+    dependencies=[
+        Depends(verify_access_token),
+        Depends(RateLimiter(times=3, seconds=60, identifier=identifier_based_on_claims))
+    ]
+)
 async def update_meal_data(
     claims: Annotated[TokenClaims, Depends(verify_access_token)],
     meal_service: Annotated[MealService, Depends(get_meal_service)],
@@ -113,7 +157,15 @@ async def update_meal_data(
     background_tasks.add_task(FastAPICacheExtended.clear, key=f"{REDIS_PREFIX}:{RedisNamespace.MEAL}:{id}")
     return response
 
-@router.put(path="/update-image/{id}", status_code=status.HTTP_200_OK, response_model=UpdateMealImageResponse)
+@router.put(
+    path="/update-image/{id}",
+    status_code=status.HTTP_200_OK,
+    response_model=UpdateMealImageResponse,
+    dependencies=[
+        Depends(verify_access_token),
+        Depends(RateLimiter(times=3, seconds=60, identifier=identifier_based_on_claims))
+    ]
+)
 async def update_meal_image(
     claims: Annotated[TokenClaims, Depends(verify_access_token)],
     meal_service: Annotated[MealService, Depends(get_meal_service)],
