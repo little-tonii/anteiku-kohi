@@ -92,7 +92,7 @@ async def get_order_payment_url(
         client_ip_address=request.client.host if request.client else "Unknown"
     )
 
-@router.get("/payment-return", status_code=status.HTTP_200_OK, response_model=HandlePaymentReturnResponse)
+@router.get(path="/payment-return", status_code=status.HTTP_200_OK, response_model=HandlePaymentReturnResponse)
 async def handle_payment_return(
     order_service: Annotated[OrderService, Depends(get_order_service)],
     request: Request,
@@ -118,7 +118,7 @@ async def get_order_by_id(order_id: int, order_service: Annotated[OrderService, 
     path="/",
     status_code=status.HTTP_200_OK,
     response_model=GetOrderPaginationResponse,
-    dependencies=Depends(RateLimiter(times=20, seconds=60))
+    dependencies=[Depends(RateLimiter(times=20, seconds=60))]
 )
 async def get_order_pagination(
     page: Annotated[int, Depends(validate_page)],
