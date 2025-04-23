@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Annotated
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer
 
 from ...infrastructure.config.dependencies import get_user_repository
@@ -13,7 +13,7 @@ from starlette import status
 
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl='user/login')
 
-async def verify_access_token(token: Annotated[str, Depends(oauth2_bearer)], user_repository: Annotated[UserRepository, Depends(get_user_repository)]) -> TokenClaims:
+async def verify_access_token(request: Request, token: Annotated[str, Depends(oauth2_bearer)], user_repository: Annotated[UserRepository, Depends(get_user_repository)]) -> TokenClaims:
     try:
         payload = jwt.decode(token=token, key=SECRET_KEY, algorithms=[HASH_ALGORITHM])
         user_id: int | None = payload.get(TokenKey.ID)
@@ -25,6 +25,8 @@ async def verify_access_token(token: Annotated[str, Depends(oauth2_bearer)], use
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token không hợp lệ')
         if await user_repository.get_by_id(id=user_id) is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token không hợp lệ')
-        return TokenClaims(id=user_id, role=user_role)
+        claims = TokenClaims(id=user_id, role=user_role)
+        request.state.claims = claims
+        return claims
     except JWTError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token không hợp lệ')

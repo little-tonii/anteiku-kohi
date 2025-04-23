@@ -10,7 +10,7 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi_limiter import FastAPILimiter
 
-from .infrastructure.config.rate_limiting import http_callback_exception_handler
+from .infrastructure.config.rate_limiting import RATE_LIMITTING_CACHE_PREFIX, http_callback_exception_handler
 from .presentation.websocket import order_websocket
 from .presentation.api import order_api
 from .infrastructure.config.variables import UPLOAD_FOLDER
@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
     FastAPICache.init(RedisBackend(redis), prefix=REDIS_PREFIX)
     await FastAPILimiter.init(
         redis=redis,
-        prefix=REDIS_PREFIX,
+        prefix=RATE_LIMITTING_CACHE_PREFIX,
         http_callback=http_callback_exception_handler
     )
     yield
