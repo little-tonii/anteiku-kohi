@@ -8,7 +8,9 @@ from pydantic import ValidationError
 from fastapi import Request
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
+from fastapi_limiter import FastAPILimiter
 
+from .infrastructure.config.rate_limiting import RATE_LIMITTING_CACHE_PREFIX, http_callback_exception_handler
 from .presentation.websocket import order_websocket
 from .presentation.api import order_api
 from .infrastructure.config.variables import UPLOAD_FOLDER
@@ -23,8 +25,14 @@ from .infrastructure.config.caching import REDIS_PREFIX, redis
 async def lifespan(app: FastAPI):
     await init_db()
     FastAPICache.init(RedisBackend(redis), prefix=REDIS_PREFIX)
+    await FastAPILimiter.init(
+        redis=redis,
+        prefix=RATE_LIMITTING_CACHE_PREFIX,
+        http_callback=http_callback_exception_handler
+    )
     yield
     await redis.close()
+    await FastAPILimiter.close()
 
 app = FastAPI(title="Anteiku Kohi", lifespan=lifespan)
 
@@ -52,17 +60,17 @@ app.include_router(order_api.router)
 app.include_router(order_websocket.router)
 
 @app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
+def http_exception_handler(request: Request, exc: HTTPException):
     return process_http_exception(exc)
 
 @app.exception_handler(ValidationError)
-async def validation_error_handler(request: Request, exc: ValidationError):
+def validation_error_handler(request: Request, exc: ValidationError):
     return process_validation_error(exc)
 
 @app.exception_handler(RequestValidationError)
-async def request_validation_error_handler(request: Request, exc: RequestValidationError):
+def request_validation_error_handler(request: Request, exc: RequestValidationError):
     return process_validation_error(exc)
 
 @app.exception_handler(Exception)
-async def exception_handler(request: Request, exc: Exception):
+def exception_handler(request: Request, exc: Exception):
     return process_global_exception(exc)
