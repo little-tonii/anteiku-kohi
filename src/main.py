@@ -8,6 +8,7 @@ from pydantic import ValidationError
 from fastapi import Request
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
+from slowapi.errors import RateLimitExceeded
 
 from .presentation.websocket import order_websocket
 from .presentation.api import order_api
@@ -16,8 +17,9 @@ from .presentation.api import meal_api
 from .presentation.api import manager_api
 from .presentation.api import user_api
 from .infrastructure.config.database import init_db
-from .infrastructure.config.exception_handler import process_http_exception, process_validation_error, process_global_exception
+from .infrastructure.config.exception_handler import process_http_exception, process_rate_limit_exceeded, process_validation_error, process_global_exception
 from .infrastructure.config.caching import REDIS_PREFIX, redis
+from .infrastructure.config.rate_limiting import limiter
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,6 +29,8 @@ async def lifespan(app: FastAPI):
     await redis.close()
 
 app = FastAPI(title="Anteiku Kohi", lifespan=lifespan)
+
+app.state.limiter = limiter
 
 origins = [
     "*"
@@ -52,17 +56,21 @@ app.include_router(order_api.router)
 app.include_router(order_websocket.router)
 
 @app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
+def http_exception_handler(request: Request, exc: HTTPException):
     return process_http_exception(exc)
 
 @app.exception_handler(ValidationError)
-async def validation_error_handler(request: Request, exc: ValidationError):
+def validation_error_handler(request: Request, exc: ValidationError):
     return process_validation_error(exc)
 
 @app.exception_handler(RequestValidationError)
-async def request_validation_error_handler(request: Request, exc: RequestValidationError):
+def request_validation_error_handler(request: Request, exc: RequestValidationError):
     return process_validation_error(exc)
 
+@app.exception_handler(RateLimitExceeded)
+def rate_limit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    return process_rate_limit_exceeded(exc)
+
 @app.exception_handler(Exception)
-async def exception_handler(request: Request, exc: Exception):
+def exception_handler(request: Request, exc: Exception):
     return process_global_exception(exc)

@@ -1,10 +1,11 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends, BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_cache import JsonCoder
 from starlette import status
 from fastapi_cache.decorator import cache
 
+from ...infrastructure.config.rate_limiting import limiter
 from ...infrastructure.config.caching import RedisNamespace
 from ...infrastructure.config.security import verify_access_token
 from ...infrastructure.utils.token_util import TokenClaims
@@ -21,7 +22,12 @@ async def logout(claims: Annotated[TokenClaims, Depends(verify_access_token)], u
     await user_service.logout_user(refresh_token=request.refresh_token)
 
 @router.post(path="/login", status_code=status.HTTP_200_OK, response_model=LoginUserResponse)
-async def login(user_service: Annotated[UserService, Depends(get_user_service)], login_form: Annotated[OAuth2PasswordRequestForm, Depends()]):
+@limiter.limit(limit_value="5/minute")
+async def login(
+    request: Request,
+    user_service: Annotated[UserService, Depends(get_user_service)],
+    login_form: Annotated[OAuth2PasswordRequestForm, Depends()]
+):
     return await user_service.login_user(email=login_form.username, password=login_form.password)
 
 @router.post(path="/register", status_code=status.HTTP_201_CREATED, response_model=RegisterUserResponse)
@@ -58,7 +64,8 @@ async def get_access_token(user_service: Annotated[UserService, Depends(get_user
 )
 async def get_info(
     claims: Annotated[TokenClaims, Depends(verify_access_token)],
-    user_service: Annotated[UserService, Depends(get_user_service)]
+    user_service: Annotated[UserService, Depends(get_user_service)],
+    request: Request,
 ):
     return await user_service.get_user_info(id=claims.id)
 
