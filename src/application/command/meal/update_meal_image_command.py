@@ -79,10 +79,10 @@ class UpdateMealImageCommandHandler:
         except (UnidentifiedImageError, IOError, Exception) as e:
             if file_path.exists():
                  file_path.unlink(missing_ok=True)
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"{e}"
-            )
+            if isinstance(e, UnidentifiedImageError):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=f"{e}")
+            else:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail=f"{e}")
         finally:
             await command.picture.close()
         meal_entity.image_url = new_image_url
