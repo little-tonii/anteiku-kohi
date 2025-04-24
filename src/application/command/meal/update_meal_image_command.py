@@ -1,5 +1,5 @@
 import asyncio
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 import uuid
 from fastapi import HTTPException, UploadFile
@@ -22,9 +22,9 @@ class UpdateMealImageCommand:
 
 class UpdateMealImageCommandHandler:
     meal_repository: MealRepository
-    executor: ThreadPoolExecutor
+    executor: ProcessPoolExecutor
 
-    def __init__(self, meal_repository: MealRepository, executor: ThreadPoolExecutor):
+    def __init__(self, meal_repository: MealRepository, executor: ProcessPoolExecutor):
         self.meal_repository = meal_repository
         self.executor = executor
 

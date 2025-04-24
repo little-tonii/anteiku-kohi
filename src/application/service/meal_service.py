@@ -1,4 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 from typing import Optional
 from fastapi import UploadFile
 
@@ -15,11 +15,11 @@ from ...domain.repository.meal_repository import MealRepository
 
 class MealService:
     meal_repository: MealRepository
-    thread_executor: ThreadPoolExecutor
+    process_executor: ProcessPoolExecutor
 
-    def __init__(self, meal_repository: MealRepository, thread_executor: ThreadPoolExecutor):
+    def __init__(self, meal_repository: MealRepository, process_executor: ProcessPoolExecutor):
         self.meal_repository = meal_repository
-        self.thread_executor = thread_executor
+        self.process_executor = process_executor
 
     async def enable_meal(self, id: int) -> EnableMealResponse:
         command = EnableMealCommand(id=id)
@@ -35,7 +35,7 @@ class MealService:
         command = CreateMealCommand(name=name, description=description, price=price, picture=picture)
         command_handler = CreateMealCommandHandler(
             meal_repository=self.meal_repository,
-            executor=self.thread_executor,
+            executor=self.process_executor,
         )
         return await command_handler.handle(command=command)
 
@@ -66,6 +66,6 @@ class MealService:
         )
         command_handler = UpdateMealImageCommandHandler(
             meal_repository=self.meal_repository,
-            executor=self.thread_executor,
+            executor=self.process_executor,
         )
         return await command_handler.handle(command=command)
