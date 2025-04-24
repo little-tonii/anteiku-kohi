@@ -16,3 +16,6 @@ VNPAY_PAYMENT_URL: str = str(os.getenv("VNPAY_PAYMENT_URL"))
 VNPAY_API_URL: str = str(os.getenv("VNPAY_API_URL"))
 VNPAY_TMN_CODE: str = str(os.getenv("VNPAY_TMN_CODE"))
 VNPAY_HASH_SECRET_KEY: str = str(os.getenv("VNPAY_HASH_SECRET_KEY"))
+
+TARGET_IMAGE_SIZE = 1080
+IMAGE_QUALITY = 85

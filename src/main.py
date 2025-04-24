@@ -9,6 +9,7 @@ from fastapi import Request
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi_limiter import FastAPILimiter
+from concurrent.futures import ThreadPoolExecutor
 
 from .infrastructure.config.rate_limiting import RATE_LIMITTING_CACHE_PREFIX, http_callback_exception_handler
 from .presentation.websocket import order_websocket
@@ -30,9 +31,12 @@ async def lifespan(app: FastAPI):
         prefix=RATE_LIMITTING_CACHE_PREFIX,
         http_callback=http_callback_exception_handler
     )
+    thread_executor = ThreadPoolExecutor()
+    app.state.thread_executor = thread_executor
     yield
     await redis.close()
     await FastAPILimiter.close()
+    app.state.thread_executor.shutdown(wait=True)
 
 app = FastAPI(title="Anteiku Kohi", lifespan=lifespan)
 
