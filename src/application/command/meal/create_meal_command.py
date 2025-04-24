@@ -1,9 +1,13 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-import shutil
+from starlette import status
 import uuid
-from fastapi import UploadFile
+from fastapi import HTTPException, UploadFile
+from PIL import UnidentifiedImageError
 
-from ....infrastructure.config.variables import UPLOAD_FOLDER
+from ....infrastructure.utils.image_processing import process_and_save_image
+from ....infrastructure.config.variables import IMAGE_QUALITY, TARGET_IMAGE_SIZE, UPLOAD_FOLDER
 from ....application.schema.response.meal_response_schema import CreateMealResponse
 from ....domain.repository.meal_repository import MealRepository
 
@@ -22,17 +26,35 @@ class CreateMealCommand:
 
 class CreateMealCommandHandler:
     meal_repository: MealRepository
+    executor: ThreadPoolExecutor
 
-    def __init__(self, meal_repository: MealRepository):
+    def __init__(self, meal_repository: MealRepository, executor: ThreadPoolExecutor):
         self.meal_repository = meal_repository
+        self.executor = executor
 
     async def handle(self, command: CreateMealCommand) -> CreateMealResponse:
-        file_extension = Path(command.picture.filename or "unknown_file").suffix
-        new_filename = f"{uuid.uuid4()}{file_extension}"
+        new_filename = f"{uuid.uuid4()}.jpg"
         file_path = Path(UPLOAD_FOLDER) / new_filename
-        with file_path.open("wb") as buffer:
-            shutil.copyfileobj(command.picture.file, buffer)
         image_url = f"/{UPLOAD_FOLDER}/{new_filename}"
+        try:
+            image_bytes = await command.picture.read()
+            if not image_bytes:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="File ảnh rỗng")
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(
+                self.executor,
+                process_and_save_image,
+                image_bytes, file_path, TARGET_IMAGE_SIZE, IMAGE_QUALITY
+            )
+        except (UnidentifiedImageError, IOError, Exception) as e:
+            if file_path.exists():
+                file_path.unlink(missing_ok=True)
+            if isinstance(e, UnidentifiedImageError):
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=f"{e}")
+            else:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail=f"{e}")
+        finally:
+            await command.picture.close()
         created_meal = await self.meal_repository.create(
             name=command.name,
             description=command.description,

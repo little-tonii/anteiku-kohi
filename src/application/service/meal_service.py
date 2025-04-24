@@ -33,7 +33,10 @@ class MealService:
 
     async def create_meal(self, name: str, description: str, price: int, picture: UploadFile) -> CreateMealResponse:
         command = CreateMealCommand(name=name, description=description, price=price, picture=picture)
-        command_handler = CreateMealCommandHandler(meal_repository=self.meal_repository)
+        command_handler = CreateMealCommandHandler(
+            meal_repository=self.meal_repository,
+            executor=self.thread_executor,
+        )
         return await command_handler.handle(command=command)
 
     async def get_meal_by_id(self, id: int) -> GetMealResponse:
