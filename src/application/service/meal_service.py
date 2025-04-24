@@ -1,12 +1,10 @@
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 from fastapi import UploadFile
 
 from ...application.command.meal.update_meal_image_command import UpdateMealImageCommand, UpdateMealImageCommandHandler
-
 from ...application.command.meal.update_meal_data_command import UpdateMealDataCommand, UpdateMealDataCommandHandler
-
 from ...application.query.meal.get_meals_query import GetMealsQuery, GetMealsQueryHandler
-
 from ...application.query.meal.get_meal_by_id_query import GetMealByIdQuery, GetMealByIdQueryHandler
 from ...application.command.meal.enable_meal_command import EnableMealCommand, EnableMealCommandHandler
 from ...application.command.meal.disable_meal_command import DisableMealCommand, DisableMealCommandHandler
@@ -17,9 +15,11 @@ from ...domain.repository.meal_repository import MealRepository
 
 class MealService:
     meal_repository: MealRepository
+    thread_executor: ThreadPoolExecutor
 
-    def __init__(self, meal_repository: MealRepository):
+    def __init__(self, meal_repository: MealRepository, thread_executor: ThreadPoolExecutor):
         self.meal_repository = meal_repository
+        self.thread_executor = thread_executor
 
     async def enable_meal(self, id: int) -> EnableMealResponse:
         command = EnableMealCommand(id=id)
@@ -33,7 +33,10 @@ class MealService:
 
     async def create_meal(self, name: str, description: str, price: int, picture: UploadFile) -> CreateMealResponse:
         command = CreateMealCommand(name=name, description=description, price=price, picture=picture)
-        command_handler = CreateMealCommandHandler(meal_repository=self.meal_repository)
+        command_handler = CreateMealCommandHandler(
+            meal_repository=self.meal_repository,
+            executor=self.thread_executor,
+        )
         return await command_handler.handle(command=command)
 
     async def get_meal_by_id(self, id: int) -> GetMealResponse:
@@ -61,5 +64,8 @@ class MealService:
             id=id,
             picture=picture
         )
-        command_handler = UpdateMealImageCommandHandler(meal_repository=self.meal_repository)
+        command_handler = UpdateMealImageCommandHandler(
+            meal_repository=self.meal_repository,
+            executor=self.thread_executor,
+        )
         return await command_handler.handle(command=command)
