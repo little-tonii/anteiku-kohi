@@ -11,7 +11,11 @@ from fastapi_cache.backends.redis import RedisBackend
 from fastapi_limiter import FastAPILimiter
 from concurrent.futures import ProcessPoolExecutor
 
-from .infrastructure.config.rate_limiting import RATE_LIMITTING_CACHE_PREFIX, http_callback_exception_handler
+from .infrastructure.config.redlock_connection_manager import redlock_connection_manager
+from .infrastructure.config.rate_limiting import (
+    RATE_LIMITTING_CACHE_PREFIX,
+    http_callback_exception_handler
+)
 from .presentation.websocket import order_websocket
 from .presentation.api import order_api
 from .infrastructure.config.variables import UPLOAD_FOLDER
@@ -19,7 +23,11 @@ from .presentation.api import meal_api
 from .presentation.api import manager_api
 from .presentation.api import user_api
 from .infrastructure.config.database import init_db
-from .infrastructure.config.exception_handler import process_http_exception, process_validation_error, process_global_exception
+from .infrastructure.config.exception_handler import (
+    process_http_exception,
+    process_validation_error,
+    process_global_exception
+)
 from .infrastructure.config.caching import REDIS_PREFIX, redis
 
 @asynccontextmanager
@@ -31,12 +39,15 @@ async def lifespan(app: FastAPI):
         prefix=RATE_LIMITTING_CACHE_PREFIX,
         http_callback=http_callback_exception_handler
     )
-    process_executor = ProcessPoolExecutor()
-    app.state.process_executor = process_executor
+    app.state.process_executor = ProcessPoolExecutor()
+    app.state.redlock_connection_manager = redlock_connection_manager
     yield
     await redis.close()
     await FastAPILimiter.close()
     app.state.process_executor.shutdown(wait=True)
+    for redlock_connection in app.state.redlock_connection_manager:
+        await redlock_connection.close()
+
 
 app = FastAPI(title="Anteiku Kohi", lifespan=lifespan)
 

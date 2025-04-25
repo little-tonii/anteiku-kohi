@@ -1,6 +1,8 @@
 from concurrent.futures import ProcessPoolExecutor
+from typing import List
 from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
+from redis.asyncio import Redis
 
 from ...application.service.order_service import OrderService
 from ...application.service.manager_service import ManagerService
@@ -26,6 +28,10 @@ async def get_db():
 def get_process_executor(request: Request) -> ProcessPoolExecutor:
     return request.app.state.process_executor
 
+# redlock connection manager
+def get_redlock_connection_manager(request: Request) -> List[Redis]:
+    return request.app.state.redlock_connection_manager
+
 # repository dependecies
 def get_user_repository(async_session: AsyncSession = Depends(get_db)) -> UserRepository:
     return UserRepositoryImpl(async_session=async_session)
@@ -45,9 +51,14 @@ def get_manager_service(user_repository: UserRepository = Depends(get_user_repos
 
 def get_meal_service(
     meal_repository: MealRepository = Depends(get_meal_repository),
-    process_executor: ProcessPoolExecutor = Depends(get_process_executor)
+    process_executor: ProcessPoolExecutor = Depends(get_process_executor),
+    redlock_connection_manager: List[Redis] = Depends(get_redlock_connection_manager)
 ) -> MealService:
-    return MealService(meal_repository=meal_repository, process_executor=process_executor)
+    return MealService(
+        meal_repository=meal_repository,
+        process_executor=process_executor,
+        redlock_connection_manager=redlock_connection_manager
+    )
 
 def get_order_service(
     order_repository: OrderRepository = Depends(get_order_repository),

@@ -11,6 +11,10 @@ ANTEIKU_KOHI_EMAIL: str = str(os.getenv("ANTEIKU_KOHI_EMAIL"))
 ANTEIKU_KOHI_EMAIL_APP_PASSWORD: str = str(os.getenv("ANTEIKU_KOHI_EMAIL_APP_PASSWORD"))
 EMAIL_SALT_VERIFYCATION: str = str(os.getenv("EMAIL_SALT_VERIFYCATION"))
 
+REDLOCK_URL_1: str = str(os.getenv("REDLOCK_URL_1"))
+REDLOCK_URL_2: str = str(os.getenv("REDLOCK_URL_2"))
+REDLOCK_URL_3: str = str(os.getenv("REDLOCK_URL_3"))
+
 VNPAY_RETURN_URL: str = str(os.getenv("VNPAY_RETURN_URL"))
 VNPAY_PAYMENT_URL: str = str(os.getenv("VNPAY_PAYMENT_URL"))
 VNPAY_API_URL: str = str(os.getenv("VNPAY_API_URL"))

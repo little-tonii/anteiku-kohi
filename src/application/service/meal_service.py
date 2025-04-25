@@ -1,6 +1,7 @@
 from concurrent.futures import ProcessPoolExecutor
-from typing import Optional
+from typing import Optional, List
 from fastapi import UploadFile
+from redis.asyncio import Redis
 
 from ...application.command.meal.update_meal_image_command import UpdateMealImageCommand, UpdateMealImageCommandHandler
 from ...application.command.meal.update_meal_data_command import UpdateMealDataCommand, UpdateMealDataCommandHandler
@@ -16,10 +17,17 @@ from ...domain.repository.meal_repository import MealRepository
 class MealService:
     meal_repository: MealRepository
     process_executor: ProcessPoolExecutor
+    redlock_connection_manager: List[Redis]
 
-    def __init__(self, meal_repository: MealRepository, process_executor: ProcessPoolExecutor):
+    def __init__(
+        self,
+        meal_repository: MealRepository,
+        process_executor: ProcessPoolExecutor,
+        redlock_connection_manager: List[Redis],
+    ):
         self.meal_repository = meal_repository
         self.process_executor = process_executor
+        self.redlock_connection_manager = redlock_connection_manager
 
     async def enable_meal(self, id: int) -> EnableMealResponse:
         command = EnableMealCommand(id=id)
@@ -62,10 +70,11 @@ class MealService:
     async def update_meal_image(self, id: int, picture: UploadFile) -> UpdateMealImageResponse:
         command = UpdateMealImageCommand(
             id=id,
-            picture=picture
+            picture=picture,
         )
         command_handler = UpdateMealImageCommandHandler(
             meal_repository=self.meal_repository,
             executor=self.process_executor,
+            redlock_connection_manager=self.redlock_connection_manager
         )
         return await command_handler.handle(command=command)
