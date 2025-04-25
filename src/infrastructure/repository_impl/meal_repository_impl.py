@@ -1,11 +1,10 @@
 from typing import Optional
-
-from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 from ...infrastructure.model.meal_model import MealModel
 from ...domain.entity.meal_entity import MealEntity
 from ...domain.repository.meal_repository import MealRepository
-from sqlalchemy.ext.asyncio import AsyncSession
 
 class MealRepositoryImpl(MealRepository):
     async_session: AsyncSession
@@ -56,21 +55,19 @@ class MealRepositoryImpl(MealRepository):
     async def update(self, meal_entity: MealEntity) -> Optional[MealEntity]:
         async with self.async_session as session:
             async with session.begin():
-                query= (
-                    update(MealModel)
+                query=(
+                    select(MealModel)
                     .where(MealModel.id == meal_entity.id)
-                    .values(
-                        name=meal_entity.name,
-                        description=meal_entity.description,
-                        price=meal_entity.price,
-                        image_url=meal_entity.image_url
-                    )
-                    .returning(MealModel)
+                    .with_for_update()
                 )
                 result = await session.execute(query)
                 meal_model = result.scalar_one_or_none()
                 if not meal_model:
                     return None
+                meal_model.name = meal_entity.name # type: ignore
+                meal_model.description = meal_entity.description # type: ignore
+                meal_model.price = meal_entity.price # type: ignore
+                meal_model.image_url = meal_entity.image_url # type: ignore
             await session.refresh(meal_model)
             return MealEntity(
                 id=meal_model.id, # type: ignore
@@ -109,35 +106,31 @@ class MealRepositoryImpl(MealRepository):
     async def deactivate(self, id: int) -> bool:
         async with self.async_session as session:
             async with session.begin():
-                query = (
-                    update(MealModel)
+                query=(
+                    select(MealModel)
                     .where(MealModel.id == id, MealModel.is_available == True)
-                    .values(
-                        is_available=False
-                    )
-                    .returning(MealModel)
+                    .with_for_update()
                 )
                 result = await session.execute(query)
-                deactivated_meal = result.scalar()
-                if deactivated_meal:
-                    await session.commit()
-                    return True
-                return False
+                meal_model = result.scalar()
+                if not meal_model:
+                    return False
+                meal_model.is_available = False # type: ignore
+            await session.refresh(meal_model)
+            return meal_model.is_available == False # type: ignore
 
     async def activate(self, id: int) -> bool:
         async with self.async_session as session:
             async with session.begin():
-                query = (
-                    update(MealModel)
+                query=(
+                    select(MealModel)
                     .where(MealModel.id == id, MealModel.is_available == False)
-                    .values(
-                        is_available = True
-                    )
-                    .returning(MealModel)
+                    .with_for_update()
                 )
                 result = await session.execute(query)
-                activated_meal = result.scalar()
-                if activated_meal:
-                    await session.commit()
-                    return True
-                return False
+                meal_model = result.scalar()
+                if not meal_model:
+                    return False
+                meal_model.is_available = True # type: ignore
+            await session.refresh(meal_model)
+            return meal_model.is_available == True # type: ignore

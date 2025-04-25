@@ -11,7 +11,6 @@ from ....application.schema.response.meal_response_schema import UpdateMealImage
 from ....domain.repository.meal_repository import MealRepository
 from ....infrastructure.utils.image_processing import process_and_save_image
 
-
 class UpdateMealImageCommand:
     id: int
     picture: UploadFile
@@ -32,7 +31,6 @@ class UpdateMealImageCommandHandler:
         meal_entity = await self.meal_repository.get_by_id(id=command.id)
         if not meal_entity:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Món ăn không tồn tại")
-        old_image_url = meal_entity.image_url.lstrip("/")
         new_filename = f"{uuid.uuid4()}.jpg"
         file_path = Path(UPLOAD_FOLDER) / new_filename
         new_image_url = f"/{UPLOAD_FOLDER}/{new_filename}"
@@ -55,12 +53,13 @@ class UpdateMealImageCommandHandler:
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail=f"{e}")
         finally:
             await command.picture.close()
+        old_image_url = meal_entity.image_url.lstrip("/")
         meal_entity.image_url = new_image_url
         updated_meal = await self.meal_repository.update(meal_entity=meal_entity)
         if not updated_meal:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Món ăn không tồn tại")
         if old_image_url and Path(old_image_url).exists():
-            Path(old_image_url).unlink()
+            Path(old_image_url).unlink(missing_ok=True)
         return UpdateMealImageResponse(
             id=updated_meal.id,
             image_url=updated_meal.image_url,
