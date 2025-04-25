@@ -14,23 +14,49 @@ class UserRepositoryImpl(UserRepository):
 
     async def activate_by_id(self, id: int) -> bool:
         async with self.async_session as session:
-            query = (
+            select_stmt = (
+                select(UserModel)
+                .where(UserModel.id == id)
+                .with_for_update()
+            )
+            result = await session.execute(select_stmt)
+            user_model = result.scalar_one_or_none()
+            if user_model is None:
+                return False
+            update_stmt = (
                 update(UserModel)
-                .where(UserModel.id == id, UserModel.role == UserRole.STAFF, UserModel.is_active == False)
+                .where(
+                    UserModel.id == id,
+                    UserModel.role == UserRole.STAFF,
+                    UserModel.is_active == False
+                )
                 .values(is_active=True)
             )
-            result = await session.execute(query)
+            result = await session.execute(update_stmt)
             await session.commit()
             return result.rowcount > 0
 
     async def activate_by_email(self, email: str) -> bool:
         async with self.async_session as session:
-            query = (
+            select_stmt = (
+                select(UserModel)
+                .where(UserModel.email == email)
+                .with_for_update()
+            )
+            result = await session.execute(select_stmt)
+            user_model = result.scalar_one_or_none()
+            if user_model is None:
+                return False
+            udpate_stmt = (
                 update(UserModel)
-                .where(UserModel.email == email, UserModel.role == UserRole.STAFF, UserModel.is_active == False)
+                .where(
+                    UserModel.email == email,
+                    UserModel.role == UserRole.STAFF,
+                    UserModel.is_active == False
+                )
                 .values(is_active=True)
             )
-            result = await session.execute(query)
+            result = await session.execute(udpate_stmt)
             await session.commit()
             return result.rowcount > 0
 
@@ -102,20 +128,46 @@ class UserRepositoryImpl(UserRepository):
 
     async def deactivate_by_id(self, id: int) -> bool:
         async with self.async_session as session:
-            query = (
+            select_stmt = (
+                select(UserModel)
+                .where(UserModel.id == id)
+                .with_for_update()
+            )
+            result = await session.execute(select_stmt)
+            user_model = result.scalar_one_or_none()
+            if user_model is None:
+                return False
+            udpate_stmt = (
                 update(UserModel)
-                .where(UserModel.id == id, UserModel.role == UserRole.STAFF, UserModel.is_active == True)
+                .where(
+                    UserModel.id == id,
+                    UserModel.role == UserRole.STAFF,
+                    UserModel.is_active == True
+                )
                 .values(is_active=False)
             )
-            result = await session.execute(query)
+            result = await session.execute(udpate_stmt)
             await session.commit()
             return result.rowcount > 0
 
     async def deactivate_by_email(self, email: str) -> bool:
         async with self.async_session as session:
+            select_stmt = (
+                select(UserModel)
+                .where(UserModel.email == email)
+                .with_for_update()
+            )
+            result = await session.execute(select_stmt)
+            user_model = result.scalar_one_or_none()
+            if user_model is None:
+                return False
             query = (
                 update(UserModel)
-                .where(UserModel.email == email, UserModel.role == UserRole.STAFF, UserModel.is_active == True)
+                .where(
+                    UserModel.email == email,
+                    UserModel.role == UserRole.STAFF,
+                    UserModel.is_active == True
+                )
                 .values(is_active=False)
             )
             result = await session.execute(query)
@@ -153,7 +205,16 @@ class UserRepositoryImpl(UserRepository):
     async def update(self, user_entity: UserEntity) -> Optional[UserEntity]:
         async with self.async_session as session:
             async with session.begin():
-                query = (
+                select_stmt = (
+                    select(UserModel)
+                    .where(UserModel.id == user_entity.id)
+                    .with_for_update()
+                )
+                result = await session.execute(select_stmt)
+                user_model = result.scalar_one_or_none()
+                if not user_model:
+                    return None
+                update_stmt = (
                     update(UserModel)
                     .where(UserModel.id == user_entity.id)
                     .values(
@@ -166,7 +227,7 @@ class UserRepositoryImpl(UserRepository):
                     )
                     .returning(UserModel)
                 )
-                result = await session.execute(query)
+                result = await session.execute(update_stmt)
                 user_model = result.scalar_one_or_none()
                 if user_model is None:
                     return None

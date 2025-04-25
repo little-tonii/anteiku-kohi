@@ -71,15 +71,24 @@ class OrderRepositoryImpl(OrderRepository):
     async def update_order_status(self, order_id: int, status: str) -> Optional[OrderEntity]:
         async with self.async_session as session:
             async with session.begin():
-                stmt = (
+                select_stmt = (
+                    select(OrderModel)
+                    .where(OrderModel.id == order_id)
+                    .with_for_update()
+                )
+                result = await session.execute(select_stmt)
+                existed_order_model = result.scalar_one_or_none()
+                if existed_order_model is None:
+                    return None
+                update_stmt = (
                     update(OrderModel)
                     .where(OrderModel.id == order_id)
                     .values(order_status=OrderStatus(status))
                     .returning(OrderModel)
                 )
-                result = await session.execute(stmt)
-                existed_order_model = result.scalar_one_or_none()
-                if existed_order_model is None:
+                result = await session.execute(update_stmt)
+                updated_order_model = result.scalar_one_or_none()
+                if updated_order_model is None:
                     return None
                 order_meals = await session.execute(
                     select(OrderMealModel)
@@ -87,13 +96,13 @@ class OrderRepositoryImpl(OrderRepository):
                 )
                 meal_ids = [meal.meal_id for meal in order_meals.scalars()]
                 return OrderEntity(
-                    id=existed_order_model.id, # type: ignore
+                    id=updated_order_model.id, # type: ignore
                     meals=meal_ids, # type: ignore
-                    updated_at=existed_order_model.updated_at, # type: ignore
-                    created_at=existed_order_model.created_at, # type: ignore
-                    order_status=existed_order_model.order_status, # type: ignore
-                    payment_status=existed_order_model.payment_status, # type: ignore
-                    staff_id=existed_order_model.staff_id, # type: ignore
+                    updated_at=updated_order_model.updated_at, # type: ignore
+                    created_at=updated_order_model.created_at, # type: ignore
+                    order_status=updated_order_model.order_status, # type: ignore
+                    payment_status=updated_order_model.payment_status, # type: ignore
+                    staff_id=updated_order_model.staff_id, # type: ignore
                 )
 
     async def update_order_staff_id(self, order_id: int, staff_id: int) -> bool:
@@ -151,13 +160,18 @@ class OrderRepositoryImpl(OrderRepository):
     async def update_order_payment_status(self, order_id: int, status: str) -> None:
         async with self.async_session as session:
             async with session.begin():
-                stmt = (
+                select_statement = (
+                    select(OrderModel)
+                    .where(OrderModel.id == order_id)
+                    .with_for_update()
+                )
+                await session.execute(select_statement)
+                update_statement = (
                     update(OrderModel)
                     .where(OrderModel.id == order_id)
                     .values(payment_status=status)
-                    .returning(OrderModel)
                 )
-                await session.execute(stmt)
+                await session.execute(update_statement)
 
     async def find_orders(self, page: int, size: int, is_order_responsible: bool | None) -> List[OrderEntity]:
         async with self.async_session as session:
