@@ -5,6 +5,7 @@ from starlette import status
 from fastapi_cache.decorator import cache
 from fastapi_cache import JsonCoder
 
+from ...application.socket_manager.staff_manager import staff_manager
 from ...infrastructure.config.rate_limiting import identifier_based_on_claims
 from ...infrastructure.config.caching import REDIS_PREFIX, FastAPICacheExtended, RedisNamespace
 from ...infrastructure.utils.validator import validate_is_order_responsible, validate_page, validate_size
@@ -14,7 +15,15 @@ from ...infrastructure.utils.token_util import TokenClaims
 from ...application.service.order_service import OrderService
 from ...infrastructure.config.dependencies import get_order_service
 from ...application.schema.request.order_request_schema import CreateOrderRequest, UpdateOrderStatusRequest
-from ...application.schema.response.order_response_schema import CreateOrderResponse, GetOrderByIdResponse, GetOrderPaginationResponse, GetOrderPaymentUrlResponse, HandlePaymentReturnResponse, TakeResponsibilityForOrderResponse, UpdateOrderStatusResponse
+from ...application.schema.response.order_response_schema import (
+    CreateOrderResponse,
+    GetOrderByIdResponse,
+    GetOrderPaginationResponse,
+    GetOrderPaymentUrlResponse,
+    HandlePaymentReturnResponse,
+    TakeResponsibilityForOrderResponse,
+    UpdateOrderStatusResponse
+)
 
 router = APIRouter(prefix="/order", tags=["Order"])
 
@@ -22,13 +31,16 @@ router = APIRouter(prefix="/order", tags=["Order"])
     path="/create",
     status_code=status.HTTP_201_CREATED,
     response_model=CreateOrderResponse,
-    dependencies=[Depends(RateLimiter(times=20, seconds=60))]
+    dependencies=[Depends(RateLimiter(times=20, seconds=60))],
 )
 async def create_order(
     request: CreateOrderRequest,
-    order_service: Annotated[OrderService, Depends(get_order_service)]
+    order_service: Annotated[OrderService, Depends(get_order_service)],
+    background_tasks: BackgroundTasks,
 ):
-    return await order_service.create_order(meals_ids=request.meals)
+    response = await order_service.create_order(meals_ids=request.meals)
+    background_tasks.add_task(staff_manager.broadcast_new_order, order_id=response.id)
+    return response
 
 @router.put(
     path="/take-responsibility",

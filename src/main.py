@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from pathlib import Path
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, WebSocket, WebSocketException
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -11,6 +11,7 @@ from fastapi_cache.backends.redis import RedisBackend
 from fastapi_limiter import FastAPILimiter
 from concurrent.futures import ProcessPoolExecutor
 
+from .presentation.websocket import staff_websocket
 from .infrastructure.config.redlock_connection_manager import redlock_connection_manager
 from .infrastructure.config.rate_limiting import (
     RATE_LIMITTING_CACHE_PREFIX,
@@ -26,7 +27,8 @@ from .infrastructure.config.database import init_db
 from .infrastructure.config.exception_handler import (
     process_http_exception,
     process_validation_error,
-    process_global_exception
+    process_global_exception,
+    process_web_socket_exception
 )
 from .infrastructure.config.caching import REDIS_PREFIX, redis
 
@@ -73,6 +75,7 @@ app.include_router(meal_api.router)
 app.include_router(order_api.router)
 
 app.include_router(order_websocket.router)
+app.include_router(staff_websocket.router)
 
 @app.exception_handler(HTTPException)
 def http_exception_handler(request: Request, exc: HTTPException):
@@ -85,6 +88,10 @@ def validation_error_handler(request: Request, exc: ValidationError):
 @app.exception_handler(RequestValidationError)
 def request_validation_error_handler(request: Request, exc: RequestValidationError):
     return process_validation_error(exc)
+
+@app.exception_handler(WebSocketException)
+async def web_socket_exception_handler(websocket: WebSocket, exc: WebSocketException):
+    await process_web_socket_exception(websocket, exc)
 
 @app.exception_handler(Exception)
 def exception_handler(request: Request, exc: Exception):
