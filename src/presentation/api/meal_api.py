@@ -8,8 +8,24 @@ from fastapi_cache.decorator import cache
 from ...infrastructure.config.rate_limiting import identifier_based_on_claims
 from ...infrastructure.config.caching import REDIS_PREFIX, FastAPICacheExtended, RedisNamespace
 from ...application.schema.request.meal_request_schema import UpdateMealDataRequest
-from ...infrastructure.utils.validator import validate_is_available_meal, validate_meal_description, validate_meal_name, validate_meal_price, validate_page, validate_picture, validate_size
-from ...application.schema.response.meal_response_schema import CreateMealResponse, DisableMealResponse, EnableMealResponse, GetMealResponse, GetMealsResponse, UpdateMealDataResponse, UpdateMealImageResponse
+from ...infrastructure.utils.validator import (
+    validate_is_available_meal,
+    validate_meal_description,
+    validate_meal_name,
+    validate_meal_price,
+    validate_page,
+    validate_picture,
+    validate_size
+)
+from ...application.schema.response.meal_response_schema import (
+    CreateMealResponse,
+    DisableMealResponse,
+    EnableMealResponse,
+    GetMealResponse,
+    GetMealsResponse,
+    UpdateMealDataResponse,
+    UpdateMealImageResponse
+)
 from ...application.service.meal_service import MealService
 from ...infrastructure.config.dependencies import get_meal_service
 from ...infrastructure.config.security import verify_access_token
@@ -108,7 +124,7 @@ async def get_meal_by_id(meal_service: Annotated[MealService, Depends(get_meal_s
     path="/",
     status_code=status.HTTP_200_OK,
     response_model=GetMealsResponse,
-    # dependencies=[Depends(RateLimiter(times=20, seconds=60))]
+    dependencies=[Depends(RateLimiter(times=20, seconds=60))]
 )
 @cache(
     expire=60 * 60 * 24,
@@ -161,10 +177,10 @@ async def update_meal_data(
     path="/update-image/{id}",
     status_code=status.HTTP_200_OK,
     response_model=UpdateMealImageResponse,
-    # dependencies=[
-    #     Depends(verify_access_token),
-    #     Depends(RateLimiter(times=3, seconds=60, identifier=identifier_based_on_claims))
-    # ]
+    dependencies=[
+        Depends(verify_access_token),
+        Depends(RateLimiter(times=3, seconds=60, identifier=identifier_based_on_claims))
+    ]
 )
 async def update_meal_image(
     claims: Annotated[TokenClaims, Depends(verify_access_token)],
