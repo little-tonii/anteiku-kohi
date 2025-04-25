@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, WebSocket, WebSocketException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
@@ -35,6 +35,9 @@ def process_validation_error(exc: ValidationError | RequestValidationError):
         status_code=status.HTTP_400_BAD_REQUEST,
         content=ErrorsResponse(messages=messages).model_dump()
     )
+
+async def process_web_socket_exception(websocket: WebSocket, exc: WebSocketException):
+    await websocket.close(code=exc.code, reason=exc.reason)
 
 def process_global_exception(exc: Exception):
     return JSONResponse(
