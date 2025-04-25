@@ -30,6 +30,51 @@ services:
       timeout: 5s
       retries: 5
 
+  anteiku_kohi_redlock_1:
+    image: redis:latest
+    container_name: anteiku_kohi_redlock_1
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+    volumes:
+      - redlock_1:/data
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  anteiku_kohi_redlock_2:
+    image: redis:latest
+    container_name: anteiku_kohi_redlock_2
+    restart: unless-stopped
+    ports:
+      - "6381:6379"
+    volumes:
+      - redlock_2:/data
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  anteiku_kohi_redlock_3:
+    image: redis:latest
+    container_name: anteiku_kohi_redlock_3
+    restart: unless-stopped
+    ports:
+      - "6382:6379"
+    volumes:
+      - redlock_3:/data
+    command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   anteiku_kohi_redisinsight:
     image: redislabs/redisinsight:latest
     container_name: anteiku_kohi_redisinsight
@@ -48,6 +93,12 @@ services:
         condition: service_healthy
       anteiku_kohi_redis:
         condition: service_healthy
+      anteiku_kohi_redlock_1:
+        condition: service_healthy
+      anteiku_kohi_redlock_2:
+        condition: service_healthy
+      anteiku_kohi_redlock_3:
+        condition: service_healthy
     env_file:
       - .env.app
     ports:
@@ -62,4 +113,7 @@ volumes:
   postgres_data:
   meal_images:
   redis_data:
+  redlock_1:
+  redlock_2:
+  redlock_3:
   redisinsight_data:
