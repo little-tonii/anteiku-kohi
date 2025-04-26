@@ -35,5 +35,6 @@ class VerifyAccountCommandHandler:
             if updated_user is None:
                 raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Email chưa đăng ký tài khoản")
             return VerifyAccountResponse(
-                message="Xác thực tài khoản thành công"
+                message="Xác thực tài khoản thành công",
+                user_email=updated_user.email,
             )

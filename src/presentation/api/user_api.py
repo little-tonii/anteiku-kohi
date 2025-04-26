@@ -6,6 +6,7 @@ from starlette import status
 from fastapi_cache.decorator import cache
 from fastapi_limiter.depends import RateLimiter
 
+from ...application.background_task.send_email_verification_success import send_email_verification_success
 from ...application.background_task.send_email_reset_password_code import send_email_reset_password_code
 from ...application.background_task.send_email_reset_password_success import send_email_reset_password_success
 from ...infrastructure.config.rate_limiting import identifier_based_on_claims
@@ -110,9 +111,12 @@ async def get_info(
 )
 async def verify_account(
     user_service: Annotated[UserService, Depends(get_user_service)],
-    token: str
+    token: str,
+    background_tasks: BackgroundTasks,
 ):
-    return await user_service.verify_account(token=token)
+    response = await user_service.verify_account(token=token)
+    background_tasks.add_task(send_email_verification_success, email=response.user_email)
+    return response
 
 @router.post(
     path="/forgot-password",

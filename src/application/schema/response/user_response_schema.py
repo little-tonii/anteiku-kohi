@@ -35,6 +35,7 @@ class GetAccessTokenResponse(BaseModel):
 
 class VerifyAccountResponse(BaseModel):
     message: str
+    user_email: str = Field(exclude=True)
 
 class GetUserByEmailResponse(BaseModel):
     id: int

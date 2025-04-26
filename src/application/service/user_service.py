@@ -25,7 +25,11 @@ class UserService:
     user_repository: UserRepository
     reset_password_code_repository: ResetPasswordCodeRepository
 
-    def __init__(self, user_repository: UserRepository, reset_password_code_repository: ResetPasswordCodeRepository):
+    def __init__(
+        self,
+        user_repository: UserRepository,
+        reset_password_code_repository: ResetPasswordCodeRepository,
+    ):
         self.user_repository = user_repository
         self.reset_password_code_repository = reset_password_code_repository
 
