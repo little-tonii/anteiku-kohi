@@ -186,21 +186,21 @@ class UserRepositoryImpl(UserRepository):
                 )
                 session.add(user_model)
                 await session.flush()
-            await session.refresh(user_model)
-            return UserEntity(
-                id=user_model.id, # type: ignore
-                full_name=user_model.full_name, # type: ignore
-                phone_number=user_model.phone_number, # type: ignore
-                email=user_model.email, # type: ignore
-                address=user_model.address, # type: ignore
-                updated_at=user_model.updated_at, # type: ignore
-                joined_at=user_model.joined_at, # type: ignore
-                is_active=user_model.is_active, # type: ignore
-                hashed_password=user_model.hashed_password, # type: ignore
-                refresh_token=user_model.refresh_token, # type: ignore
-                role=user_model.role, # type: ignore
-                is_verified=user_model.is_verified # type: ignore
-            )
+                await session.refresh(user_model)
+                return UserEntity(
+                    id=user_model.id, # type: ignore
+                    full_name=user_model.full_name, # type: ignore
+                    phone_number=user_model.phone_number, # type: ignore
+                    email=user_model.email, # type: ignore
+                    address=user_model.address, # type: ignore
+                    updated_at=user_model.updated_at, # type: ignore
+                    joined_at=user_model.joined_at, # type: ignore
+                    is_active=user_model.is_active, # type: ignore
+                    hashed_password=user_model.hashed_password, # type: ignore
+                    refresh_token=user_model.refresh_token, # type: ignore
+                    role=user_model.role, # type: ignore
+                    is_verified=user_model.is_verified # type: ignore
+                )
 
     async def update(self, user_entity: UserEntity) -> Optional[UserEntity]:
         async with self.async_session as session:
@@ -231,17 +231,17 @@ class UserRepositoryImpl(UserRepository):
                 user_model = result.scalar_one_or_none()
                 if user_model is None:
                     return None
-            return UserEntity(
-                id=user_model.id, # type: ignore
-                full_name=user_model.full_name, # type: ignore
-                phone_number=user_model.phone_number, # type: ignore
-                email=user_model.email, # type: ignore
-                address=user_model.address, # type: ignore
-                updated_at=user_model.updated_at, # type: ignore
-                joined_at=user_model.joined_at, # type: ignore
-                is_active=user_model.is_active, # type: ignore
-                hashed_password=user_model.hashed_password, # type: ignore
-                refresh_token=user_model.refresh_token, # type: ignore
-                role=user_model.role, # type: ignore
-                is_verified=user_model.is_verified # type: ignore
-            )
+                return UserEntity(
+                    id=user_model.id, # type: ignore
+                    full_name=user_model.full_name, # type: ignore
+                    phone_number=user_model.phone_number, # type: ignore
+                    email=user_model.email, # type: ignore
+                    address=user_model.address, # type: ignore
+                    updated_at=user_model.updated_at, # type: ignore
+                    joined_at=user_model.joined_at, # type: ignore
+                    is_active=user_model.is_active, # type: ignore
+                    hashed_password=user_model.hashed_password, # type: ignore
+                    refresh_token=user_model.refresh_token, # type: ignore
+                    role=user_model.role, # type: ignore
+                    is_verified=user_model.is_verified # type: ignore
+                )

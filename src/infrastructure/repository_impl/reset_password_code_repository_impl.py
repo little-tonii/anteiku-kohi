@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlalchemy import delete, insert, select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...domain.entity.reset_password_code_entity import ResetPasswordCodeEntity
@@ -23,27 +23,23 @@ class ResetPasswordCodeRepositoryImpl(ResetPasswordCodeRepository):
                     )
                 )
                 result = await session.execute(stmt)
-            if result.rowcount == 0:
-                return False
-        return True
+                if result.rowcount == 0:
+                    return False
+                return True
 
     async def create(self, user_id: int, code: str) -> ResetPasswordCodeEntity:
         async with self.async_session as session:
             async with session.begin():
                 reset_password_model = ResetPasswordCodeModel(user_id=user_id, code=code)
-                stmt = insert(ResetPasswordCodeModel).values(
-                    user_id=reset_password_model.user_id,
-                    code=reset_password_model.code
-                )
-                await session.execute(stmt)
+                session.add(reset_password_model)
                 await session.flush()
                 await session.refresh(reset_password_model)
-        return ResetPasswordCodeEntity(
-            user_id=reset_password_model.user_id, # type: ignore
-            code=reset_password_model.code, # type: ignore
-            id=reset_password_model.id, # type: ignore
-            created_at=reset_password_model.created_at, # type: ignore
-        )
+                return ResetPasswordCodeEntity(
+                    user_id=reset_password_model.user_id, # type: ignore
+                    code=reset_password_model.code, # type: ignore
+                    id=reset_password_model.id, # type: ignore
+                    created_at=reset_password_model.created_at, # type: ignore
+                )
 
     async def find_by_code_and_user_id(self, code: str, user_id: int) -> Optional[ResetPasswordCodeEntity]:
         async with self.async_session as session:
@@ -59,9 +55,9 @@ class ResetPasswordCodeRepositoryImpl(ResetPasswordCodeRepository):
                 reset_password_model = result.scalar_one_or_none()
                 if reset_password_model is None:
                     return None
-        return ResetPasswordCodeEntity(
-            user_id=reset_password_model.user_id, # type: ignore
-            code=reset_password_model.code, # type: ignore
-            id=reset_password_model.id, # type: ignore
-            created_at=reset_password_model.created_at, # type: ignore
-        )
+                return ResetPasswordCodeEntity(
+                    user_id=reset_password_model.user_id, # type: ignore
+                    code=reset_password_model.code, # type: ignore
+                    id=reset_password_model.id, # type: ignore
+                    created_at=reset_password_model.created_at, # type: ignore
+                )
