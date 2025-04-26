@@ -68,17 +68,17 @@ class MealRepositoryImpl(MealRepository):
                 meal_model.description = meal_entity.description # type: ignore
                 meal_model.price = meal_entity.price # type: ignore
                 meal_model.image_url = meal_entity.image_url # type: ignore
-            await session.refresh(meal_model)
-            return MealEntity(
-                id=meal_model.id, # type: ignore
-                name=meal_model.name, # type: ignore
-                description=meal_model.description, # type: ignore
-                created_at=meal_model.created_at, # type: ignore
-                updated_at=meal_model.updated_at, # type: ignore
-                is_available=meal_model.is_available, # type: ignore
-                price=meal_model.price, # type: ignore
-                image_url=meal_model.image_url # type: ignore
-            )
+                await session.refresh(meal_model)
+                return MealEntity(
+                    id=meal_model.id, # type: ignore
+                    name=meal_model.name, # type: ignore
+                    description=meal_model.description, # type: ignore
+                    created_at=meal_model.created_at, # type: ignore
+                    updated_at=meal_model.updated_at, # type: ignore
+                    is_available=meal_model.is_available, # type: ignore
+                    price=meal_model.price, # type: ignore
+                    image_url=meal_model.image_url # type: ignore
+                )
 
     async def create(self, name: str, description: str, price: int, image_url: str) -> MealEntity:
         meal_model = MealModel(
@@ -91,17 +91,17 @@ class MealRepositoryImpl(MealRepository):
             async with session.begin():
                 session.add(meal_model)
                 await session.flush()
-            await session.refresh(meal_model)
-            return MealEntity(
-                id=meal_model.id, # type: ignore
-                name=meal_model.name, # type: ignore
-                description=meal_model.description, # type: ignore
-                created_at=meal_model.created_at, # type: ignore
-                updated_at=meal_model.updated_at, # type: ignore
-                is_available=meal_model.is_available, # type: ignore
-                price=meal_model.price, # type: ignore
-                image_url=meal_model.image_url # type: ignore
-            )
+                await session.refresh(meal_model)
+                return MealEntity(
+                    id=meal_model.id, # type: ignore
+                    name=meal_model.name, # type: ignore
+                    description=meal_model.description, # type: ignore
+                    created_at=meal_model.created_at, # type: ignore
+                    updated_at=meal_model.updated_at, # type: ignore
+                    is_available=meal_model.is_available, # type: ignore
+                    price=meal_model.price, # type: ignore
+                    image_url=meal_model.image_url # type: ignore
+                )
 
     async def deactivate(self, id: int) -> bool:
         async with self.async_session as session:
@@ -116,8 +116,8 @@ class MealRepositoryImpl(MealRepository):
                 if not meal_model:
                     return False
                 meal_model.is_available = False # type: ignore
-            await session.refresh(meal_model)
-            return meal_model.is_available == False # type: ignore
+                await session.refresh(meal_model)
+                return meal_model.is_available == False # type: ignore
 
     async def activate(self, id: int) -> bool:
         async with self.async_session as session:
@@ -132,5 +132,5 @@ class MealRepositoryImpl(MealRepository):
                 if not meal_model:
                     return False
                 meal_model.is_available = True # type: ignore
-            await session.refresh(meal_model)
-            return meal_model.is_available == True # type: ignore
+                await session.refresh(meal_model)
+                return meal_model.is_available == True # type: ignore

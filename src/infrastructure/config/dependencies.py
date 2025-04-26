@@ -50,7 +50,7 @@ def get_reset_password_code_repository(async_session: AsyncSession = Depends(get
 # service dependencies
 def get_user_service(
     user_repository: UserRepository = Depends(get_user_repository),
-    reset_password_code_repository: ResetPasswordCodeRepository = Depends(get_reset_password_code_repository)
+    reset_password_code_repository: ResetPasswordCodeRepository = Depends(get_reset_password_code_repository),
 ) -> UserService:
     return UserService(
         user_repository=user_repository,

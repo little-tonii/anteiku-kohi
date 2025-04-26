@@ -26,7 +26,7 @@ class RegisterUserRequest(BaseModel):
             raise ValueError("Email không được để trống")
         try:
             email_infor = validate_email(value, check_deliverability=True)
-            return email_infor.normalized
+            return email_infor.normalized.lower()
         except EmailNotValidError:
             raise ValueError(f"Email {value} không hợp lệ")
 
@@ -82,7 +82,7 @@ class ForgotPasswordRequest(BaseModel):
             raise ValueError("Email không được để trống")
         try:
             email_infor = validate_email(value, check_deliverability=True)
-            return email_infor.normalized
+            return email_infor.normalized.lower()
         except EmailNotValidError:
             raise ValueError(f"Email {value} không hợp lệ")
 
@@ -98,7 +98,7 @@ class ResetPasswordRequest(BaseModel):
             raise ValueError("Email không được để trống")
         try:
             email_infor = validate_email(value, check_deliverability=True)
-            return email_infor.normalized
+            return email_infor.normalized.lower()
         except EmailNotValidError:
             raise ValueError(f"Email {value} không hợp lệ")
 

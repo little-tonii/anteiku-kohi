@@ -9,7 +9,7 @@ async def send_email_verification(email: str):
     message = MessageSchema(
         subject="Anteiku Kohi - Xác thực email",
         recipients=[email],
-        body=f"Liên kết xác thực: <a href=\"{confirmation_url}\">{confirmation_url}</a>",
+        body=f"<p color='black'>Liên kết xác thực: <a href=\"{confirmation_url}\">{confirmation_url}</a></p>",
         subtype=MessageType.html
     )
     fm = FastMail(mail_config)

@@ -25,6 +25,10 @@ class CreateResetPasswordCodeCommandHandler:
         user_entity = await self.user_repository.get_by_email(email=command.email)
         if not user_entity:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tài khoản không tồn tại")
+        if user_entity.is_active == False:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Tài khoản đã bị khóa")
+        if user_entity.is_verified == False:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Tài khoản chưa được xác thực")
         random_code = ''.join(random.choices(string.digits, k=6))
         reset_password_code = await self.reset_password_code_repository.create(user_id=user_entity.id, code=random_code)
         return ForgotPasswordResponse(
