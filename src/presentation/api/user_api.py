@@ -6,13 +6,15 @@ from starlette import status
 from fastapi_cache.decorator import cache
 from fastapi_limiter.depends import RateLimiter
 
+from ...application.background_task.send_email_reset_password_code import send_email_reset_password_code
+from ...application.background_task.send_email_reset_password_success import send_email_reset_password_success
 from ...infrastructure.config.rate_limiting import identifier_based_on_claims
 from ...infrastructure.config.caching import RedisNamespace
 from ...infrastructure.config.security import verify_access_token
 from ...infrastructure.utils.token_util import TokenClaims
 from ...infrastructure.config.dependencies import get_user_service
-from ...application.schema.request.user_request_schema import GetAccessTokenRequest, LogoutUserRequest, RegisterUserRequest
-from ...application.schema.response.user_response_schema import GetAccessTokenResponse, GetUserInfoResponse, LoginUserResponse, RegisterUserResponse, VerifyAccountResponse
+from ...application.schema.request.user_request_schema import ForgotPasswordRequest, GetAccessTokenRequest, LogoutUserRequest, RegisterUserRequest, ResetPasswordRequest
+from ...application.schema.response.user_response_schema import ForgotPasswordResponse, GetAccessTokenResponse, GetUserInfoResponse, LoginUserResponse, RegisterUserResponse, ResetPasswordResponse, VerifyAccountResponse
 from ...application.service.user_service import UserService
 from ...application.background_task.send_email_verification import send_email_verification
 
@@ -111,3 +113,33 @@ async def verify_account(
     token: str
 ):
     return await user_service.verify_account(token=token)
+
+@router.post(
+    path="/forgot-password",
+    status_code=status.HTTP_201_CREATED,
+    response_model=ForgotPasswordResponse,
+    dependencies=[Depends(RateLimiter(times=3, seconds=60))]
+)
+async def forgot_password(
+    user_service: Annotated[UserService, Depends(get_user_service)],
+    request: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
+):
+    response = await user_service.create_reset_password_code(email=request.email)
+    background_tasks.add_task(send_email_reset_password_code, email=response.user_email, code=response.code)
+    return response
+
+@router.post(
+    path="/reset-password",
+    status_code=status.HTTP_200_OK,
+    response_model=ResetPasswordResponse,
+    dependencies=[Depends(RateLimiter(times=5, seconds=60))]
+)
+async def reset_password(
+    user_service: Annotated[UserService, Depends(get_user_service)],
+    request: ResetPasswordRequest,
+    background_tasks: BackgroundTasks,
+):
+    response = await user_service.reset_password(email=request.email, code=request.code, new_password=request.new_password)
+    background_tasks.add_task(send_email_reset_password_success, email=request.email)
+    return response

@@ -4,17 +4,19 @@ from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from redis.asyncio import Redis
 
+from ..repository_impl.reset_password_code_repository_impl import ResetPasswordCodeRepositoryImpl
+from ...domain.repository.reset_password_code_repository import ResetPasswordCodeRepository
 from ...application.service.order_service import OrderService
 from ...application.service.manager_service import ManagerService
 from ...application.service.meal_service import MealService
 from ...domain.repository.meal_repository import MealRepository
-from ...infrastructure.repository_impl.meal_repository_impl import MealRepositoryImpl
+from ..repository_impl.meal_repository_impl import MealRepositoryImpl
 from ...application.service.user_service import UserService
-from ...infrastructure.repository_impl.user_repository_impl import UserRepositoryImpl
+from ..repository_impl.user_repository_impl import UserRepositoryImpl
 from ...domain.repository.user_repository import UserRepository
-from ...infrastructure.config.database import AsyncSessionLocal
+from ..config.database import AsyncSessionLocal
 from ...domain.repository.order_repository import OrderRepository
-from ...infrastructure.repository_impl.order_repository_impl import OrderRepositoryImpl
+from ..repository_impl.order_repository_impl import OrderRepositoryImpl
 
 # database session
 async def get_db():
@@ -42,9 +44,18 @@ def get_meal_repository(async_session: AsyncSession = Depends(get_db)) -> MealRe
 def get_order_repository(async_session: AsyncSession = Depends(get_db)) -> OrderRepository:
     return OrderRepositoryImpl(async_session=async_session)
 
+def get_reset_password_code_repository(async_session: AsyncSession = Depends(get_db)) -> ResetPasswordCodeRepository:
+    return ResetPasswordCodeRepositoryImpl(async_session=async_session)
+
 # service dependencies
-def get_user_service(user_repository: UserRepository = Depends(get_user_repository)) -> UserService:
-    return UserService(user_repository=user_repository)
+def get_user_service(
+    user_repository: UserRepository = Depends(get_user_repository),
+    reset_password_code_repository: ResetPasswordCodeRepository = Depends(get_reset_password_code_repository)
+) -> UserService:
+    return UserService(
+        user_repository=user_repository,
+        reset_password_code_repository=reset_password_code_repository,
+    )
 
 def get_manager_service(user_repository: UserRepository = Depends(get_user_repository)) -> ManagerService:
     return ManagerService(user_repository=user_repository)

@@ -1,6 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel
-
+from pydantic import BaseModel, Field
 
 class RegisterUserResponse(BaseModel):
     id: int
@@ -48,3 +47,12 @@ class GetUserByEmailResponse(BaseModel):
     is_active: bool
     role: str
     is_verified: bool
+
+class ForgotPasswordResponse(BaseModel):
+    message: str
+    user_id: int = Field(exclude=True)
+    code: str = Field(exclude=True)
+    user_email: str = Field(exclude=True)
+
+class ResetPasswordResponse(BaseModel):
+    message: str
