@@ -1,9 +1,5 @@
 # Anteiku-Kohi - Installation and Setup Guide
 
-## Introduction
-
-Anteiku-Kohi is a backend system for a mini food ordering store, built with modern technologies and design patterns for performance, security, and scalability. The system uses Domain Driven Design and CQRS patterns to create a maintainable and robust architecture.
-
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white" alt="Python 3.11" />
   <img src="https://img.shields.io/badge/FastAPI-005571?logo=fastapi&logoColor=white" alt="FastAPI" />
@@ -16,6 +12,9 @@ Anteiku-Kohi is a backend system for a mini food ordering store, built with mode
   <img src="https://img.shields.io/badge/VNPay-Payment-blueviolet" alt="VNPay" />
 </p>
 
+## Introduction
+
+Anteiku-Kohi is a backend system for a mini food ordering store, built with modern technologies and design patterns for performance, security, and scalability. The system uses Domain Driven Design and CQRS patterns to create a maintainable and robust architecture.
 
 ## Technology Stack
 
