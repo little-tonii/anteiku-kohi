@@ -4,6 +4,19 @@
 
 Anteiku-Kohi is a backend system for a mini food ordering store, built with modern technologies and design patterns for performance, security, and scalability. The system uses Domain Driven Design and CQRS patterns to create a maintainable and robust architecture.
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white" alt="Python 3.11" />
+  <img src="https://img.shields.io/badge/FastAPI-005571?logo=fastapi&logoColor=white" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/PostgreSQL-336791?logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Redis-DD0031?logo=redis&logoColor=white" alt="Redis" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/WebSocket-Communication-orange" alt="WebSocket" />
+  <img src="https://img.shields.io/badge/JWT-Auth-000000?logo=jsonwebtokens&logoColor=white" alt="JWT" />
+  <img src="https://img.shields.io/badge/Gunicorn-Worker-499848?logo=gunicorn&logoColor=white" alt="Gunicorn" />
+  <img src="https://img.shields.io/badge/VNPay-Payment-blueviolet" alt="VNPay" />
+</p>
+
+
 ## Technology Stack
 
 - **Backend**: Python with FastAPI framework
