@@ -17,6 +17,7 @@ class UserEntity:
     refresh_token: str | None
     role: str
     is_verified: bool
+    token_version: int
 
     def __init__(
         self,
@@ -31,7 +32,8 @@ class UserEntity:
         hashed_password: str,
         refresh_token: str,
         role: str,
-        is_verified: bool
+        is_verified: bool,
+        token_version: int,
     ):
         self.id = id
         self.full_name = full_name
@@ -45,3 +47,4 @@ class UserEntity:
         self.refresh_token = refresh_token
         self.role = role
         self.is_verified = is_verified
+        self.token_version = token_version

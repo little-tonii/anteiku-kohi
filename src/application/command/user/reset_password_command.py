@@ -45,6 +45,7 @@ class ResetPasswordCommandHandler:
         if delete_code_result == False:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Có lỗi xảy ra khi hủy mã khôi phục")
         user_entity.hashed_password = bcrypt_context.hash(command.new_password)
+        user_entity.token_version += 1
         updated_user = await self.user_repository.update(user_entity=user_entity)
         if updated_user is None:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Có lỗi xảy ra khi cập nhật mật khẩu mới")

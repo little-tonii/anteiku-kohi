@@ -22,3 +22,4 @@ class UserModel(Base):
     refresh_token = Column(String, nullable=True)
     role = Column(sqlalchemy.Enum(UserRole), nullable=False, default=UserRole.STAFF)
     is_verified = Column(Boolean, nullable=False, default=False)
+    token_version = Column(Integer, autoincrement=True, nullable=False, default=0)

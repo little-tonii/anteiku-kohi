@@ -30,8 +30,8 @@ class LoginUserCommandHandler:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Tài khoản đã bị vô hiệu hóa")
         if user_entity.is_verified == False:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Vui lòng truy cập vào email để xác minh tài khoản")
-        refresh_token = create_refresh_token(user_id=user_entity.id, role=user_entity.role)
-        access_token = create_access_token(user_id=user_entity.id, role=user_entity.role)
+        refresh_token = create_refresh_token(user_id=user_entity.id, role=user_entity.role, version=user_entity.token_version)
+        access_token = create_access_token(user_id=user_entity.id, role=user_entity.role, version=user_entity.token_version)
         user_entity.refresh_token = refresh_token
         await self.user_repository.update(user_entity=user_entity)
         return LoginUserResponse(

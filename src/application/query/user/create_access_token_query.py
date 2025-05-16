@@ -25,5 +25,5 @@ class CreateAccessTokenQueryHandler:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token không hợp lệ")
         if user_entity.is_active == False:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Tài khoản đã bị vô hiệu hóa")
-        access_token = create_access_token(user_id=user_entity.id, role=user_entity.role)
+        access_token = create_access_token(user_id=user_entity.id, role=user_entity.role, version=user_entity.token_version)
         return GetAccessTokenResponse(access_token=access_token)

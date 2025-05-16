@@ -79,7 +79,8 @@ class UserRepositoryImpl(UserRepository):
                 hashed_password=user_model.hashed_password, # type: ignore
                 refresh_token=user_model.refresh_token, # type: ignore
                 role=user_model.role, # type: ignore
-                is_verified=user_model.is_verified # type: ignore
+                is_verified=user_model.is_verified, # type: ignore
+                token_version=user_model.token_version, # type: ignore
             )
 
     async def get_by_id(self, id: int) -> Optional[UserEntity]:
@@ -101,7 +102,8 @@ class UserRepositoryImpl(UserRepository):
                 hashed_password=user_model.hashed_password, # type: ignore
                 refresh_token=user_model.refresh_token, # type: ignore
                 role=user_model.role, # type: ignore
-                is_verified=user_model.is_verified # type: ignore
+                is_verified=user_model.is_verified, # type: ignore
+                token_version=user_model.token_version # type: ignore
             )
 
     async def get_by_email(self, email: str) -> Optional[UserEntity]:
@@ -123,7 +125,8 @@ class UserRepositoryImpl(UserRepository):
                 hashed_password=user_model.hashed_password, # type: ignore
                 refresh_token=user_model.refresh_token, # type: ignore
                 role=user_model.role, # type: ignore
-                is_verified=user_model.is_verified # type: ignore
+                is_verified=user_model.is_verified, # type: ignore
+                token_version=user_model.token_version # type: ignore
             )
 
     async def deactivate_by_id(self, id: int) -> bool:
@@ -199,7 +202,8 @@ class UserRepositoryImpl(UserRepository):
                     hashed_password=user_model.hashed_password, # type: ignore
                     refresh_token=user_model.refresh_token, # type: ignore
                     role=user_model.role, # type: ignore
-                    is_verified=user_model.is_verified # type: ignore
+                    is_verified=user_model.is_verified, # type: ignore
+                    token_version=user_model.token_version # type: ignore
                 )
 
     async def update(self, user_entity: UserEntity) -> Optional[UserEntity]:
@@ -223,7 +227,8 @@ class UserRepositoryImpl(UserRepository):
                         address=user_entity.address,
                         hashed_password=user_entity.hashed_password,
                         refresh_token=user_entity.refresh_token,
-                        is_verified=user_entity.is_verified
+                        is_verified=user_entity.is_verified,
+                        token_version=user_entity.token_version,
                     )
                     .returning(UserModel)
                 )
@@ -243,5 +248,6 @@ class UserRepositoryImpl(UserRepository):
                     hashed_password=user_model.hashed_password, # type: ignore
                     refresh_token=user_model.refresh_token, # type: ignore
                     role=user_model.role, # type: ignore
-                    is_verified=user_model.is_verified # type: ignore
+                    is_verified=user_model.is_verified, # type: ignore
+                    token_version=user_model.token_version # type: ignore
                 )

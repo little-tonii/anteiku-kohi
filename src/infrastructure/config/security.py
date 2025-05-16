@@ -23,13 +23,15 @@ async def verify_access_token(
         user_id: int | None = payload.get(TokenKey.ID)
         expires: int | None = payload.get(TokenKey.EXPIRES)
         user_role: str | None = payload.get(TokenKey.ROLE)
-        if user_id is None or user_role is None or expires is None:
+        token_version: int | None = payload.get(TokenKey.VERSION)
+        if user_id is None or user_role is None or token_version is None or expires is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token không hợp lệ')
         if datetime.now(timezone.utc).timestamp() > expires:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token không hợp lệ')
-        if await user_repository.get_by_id(id=user_id) is None:
+        existed_user = await user_repository.get_by_id(id=user_id)
+        if existed_user is None or existed_user.token_version != token_version:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token không hợp lệ')
-        claims = TokenClaims(id=user_id, role=user_role)
+        claims = TokenClaims(id=user_id, role=user_role, version=token_version)
         request.state.claims = claims
         return claims
     except JWTError:
@@ -50,11 +52,12 @@ async def websocket_verify_access_token(
         user_id: int | None = payload.get(TokenKey.ID)
         expires: int | None = payload.get(TokenKey.EXPIRES)
         user_role: str | None = payload.get(TokenKey.ROLE)
-        if user_id is None or user_role is None or expires is None:
+        token_version: int | None = payload.get(TokenKey.VERSION)
+        if user_id is None or user_role is None or token_version is None or expires is None:
             raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION, reason="Token không hợp lệ")
         if datetime.now(timezone.utc).timestamp() > expires:
             raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION, reason="Token không hợp lệ")
-        claims = TokenClaims(id=user_id, role=user_role)
+        claims = TokenClaims(id=user_id, role=user_role, version=token_version)
         return claims
     except JWTError:
         raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION, reason="Token không hợp lệ")
